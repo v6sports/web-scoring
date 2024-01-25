@@ -24,7 +24,7 @@ const LiveScore = () => {
         <code className="text-xs font-light text-purple-600">
           CR{" "}
           {(scoreBallByBallData.fullScore?.totalRuns /
-            (scoreBallByBallData.fullScore?.validBalls/6))?.toFixed(2)}
+            (scoreBallByBallData.fullScore?.validBalls/6))?.toFixed(2) ?? 0}
         </code>
       </div>
       <Collapse>

@@ -5,6 +5,9 @@ import React, { useRef, useEffect, useState } from "react";
 import "./style.css";
 import { Image, Radio } from "antd";
 import { url } from "inspector";
+import { useDispatch } from "react-redux";
+import { AppDispatch, useAppSelector } from "@/redux/store";
+import { updateExtras } from "@/redux/features/slices/ballByBallSlice";
 
 interface CanvasOverlayProps {
   imageUrl: string;
@@ -16,9 +19,13 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
   width,
   height,
 }) => {
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-
+	const dispacth = useDispatch<AppDispatch>();
+  const scoreBallByBallData = useAppSelector(
+    (state) => state.ballByBallSlice
+  );
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
@@ -38,7 +45,9 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
       context.fill();
     }
   };
-
+	const selectExtra = (e) => {
+		dispacth(updateExtras({ extra_type: e.target.value }));
+	}
   return (
     <div className="m-2">
       <canvas
@@ -85,6 +94,7 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
       </div>
       <Radio.Group
         style={{ top: 615, position: "absolute", marginLeft: 8 }}
+				onChange={selectExtra}
         optionType="button"
         size="small"
         buttonStyle={"solid"}
@@ -95,11 +105,11 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           },
           {
             label: "NB",
-            value: "noBall",
+            value: "no-ball",
           },
           {
             label: "LB",
-            value: "legBye",
+            value: "leg-bye",
           },
           {
             label: "B",

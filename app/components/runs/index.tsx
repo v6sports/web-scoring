@@ -16,6 +16,9 @@ const Runs = () => {
   const scoreBallByBallData = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
+	const runTicket = useAppSelector(
+    (state) => state.ballByBallSlice
+  );
   const handleButtonClick = (value: string) => {
     if (selectedButton && parseInt(value) == selectedButton) {
       setSelectedButton(null);
@@ -46,6 +49,7 @@ const Runs = () => {
 
   const submitBallByBall = async () => {
     let _lastBall = scoreBallByBallData.fullScore?.lastBallOfOver;
+		console.log(runTicket,"ACTIVE NALL")
     let json: IballByBall = {
       localId: 0,
       over: 1,
@@ -53,9 +57,9 @@ const Runs = () => {
       ball_number: _lastBall?.nextBallNumber || 1,
       runs: selectedButton || 0,
       ball_number_included_extra: _lastBall?.ball_number_included_extra,
-      extra_type: "",
+      extra_type: runTicket?.extra_type || '',
       nextBallNumber: _lastBall?.nextBallNumber || 1,
-      extras: "",
+      extras: '',
       is_out: 0,
       out_by: 0,
       user_id: "123",

@@ -13,8 +13,30 @@ export const ballByBallSlice = createSlice({
         ...action.payload,
       };
     },
+    updateExtras: (state, action: PayloadAction<IballByBall>) => {
+      return {
+        ...state,
+        extra_type: action.payload.extra_type,
+        extras: action.payload.extras,
+      };
+    },
+    updateBolwingLength: (state, action: PayloadAction<IballByBall>) => {
+      return {
+        ...state,
+        extra_type: action.payload.extra_type,
+        extras: action.payload.extras,
+      };
+    },
+    updateBatterShot: (state, action: PayloadAction<IballByBall>) => {
+      return {
+        ...state,
+        extra_type: action.payload.extra_type,
+        extras: action.payload.extras,
+      };
+    },
   },
 });
 
-export const { updateMatchScoreBallByBall } = ballByBallSlice.actions;
+export const { updateMatchScoreBallByBall, updateExtras } =
+  ballByBallSlice.actions;
 export default ballByBallSlice.reducer;

@@ -74,6 +74,12 @@ export async function POST(req: Request) {
   );
   let totalRuns = 0;
   let validBalls = 0;
+	let extraRuns = {
+		wide:0,
+		noBall:0,
+		legBye:0,
+		bye:0
+	};
   let totalOvers = 0;
   if (readAllOversData.length > 0) {
     readAllOversData = JSON.parse(readAllOversData);
@@ -81,17 +87,44 @@ export async function POST(req: Request) {
     const oversData = readAllOversData;
 
     oversData.forEach((over) => {
-      //   console.log(over);
-      totalRuns += over.runs;
-      if (over.extra_type != "no-ball" && over.extra_type != "wide") {
+
+			if (!over.extra_type) {
+        totalRuns += over.runs;
         validBalls += 1;
       }
+
+      if (over.extra_type == "wide") {
+        let extraRunsWide = extraRuns.wide + 1;
+        if (over?.runs && over?.runs > 0)
+          extraRunsWide = extraRunsWide + over.runs;
+        extraRuns["wide"] = extraRunsWide;
+      }
+
+      if (over.extra_type == "no-ball") {
+        let extraRunsWide = extraRuns.noBall + 1;
+        if (over?.runs && over?.runs > 0) {
+          totalRuns += over.runs;
+        }
+        extraRuns["noBall"] = extraRunsWide;
+      }
+
+			if (over.extra_type == "leg-bye") {
+        let extraRunsWide = extraRuns.legBye + over?.runs;
+        extraRuns["legBye"] = extraRunsWide;
+				validBalls += 1;
+      }
+			if (over.extra_type == "bye") {
+        let extraRunsWide = extraRuns.legBye + over?.runs;
+        extraRuns["bye"] = extraRunsWide;
+				validBalls += 1;
+      }
+
     });
     // validBalls = validBalls - 1;
     // Calculate total overs
     totalOvers = Math.floor(validBalls / 6) + (validBalls % 6) / 10;
   }
-
+	const sumOfExtras = Object.values(extraRuns).reduce((total, value) => total + value, 0);
   return NextResponse.json({
     // overByOver: readAllOversData,
     fullScore: {
@@ -99,8 +132,9 @@ export async function POST(req: Request) {
       previousOver: lastOver,
       lastBallOfOver: readAllOversData[readAllOversData.length - 1],
       validBalls: validBalls,
+			extraRuns,
       totalOvers,
-      totalRuns,
+      totalRuns:totalRuns+sumOfExtras,
     },
   });
 }

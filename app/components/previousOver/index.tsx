@@ -20,16 +20,37 @@ const PreviousOver = () => {
           {" "}
           Prev Ov.
         </code>
-        {scoreBallByBallData.fullScore?.previousOver?.map((ball) => {
-          return (
-            <code
-              key={`${ball.currentTimeStamp}-${ball.run}`}
-              className="rounded-full bg-slate-300 w-6 h-6 text-center items-center justify-center flex"
-            >
-              {ball.run}
-            </code>
-          );
-        })}
+				{scoreBallByBallData.fullScore?.previousOver?.length > 0 &&
+          scoreBallByBallData.fullScore?.previousOver?.map((ball) => {
+						let circleColor = 'bg-slate-300';
+						let circileSuffix = ''
+						if (ball?.extra?.type == "leg-bye") {
+              // circleColor = "bg-orange";
+              circileSuffix = "LB";
+            }
+						if (ball?.extra?.type == "bye") {
+              circleColor = "bg-red";
+              circileSuffix = "B";
+            }
+						if (ball?.extra?.type == "no-ball") {
+              circleColor = "bg-red-300";
+              circileSuffix = "NB";
+            }
+
+						if (ball?.extra?.type == "wide") {
+              circleColor = "bg-purple-300";
+              circileSuffix = "WD";
+            }
+								console.log(ball?.extra?.type,"BALLBYBALL")
+            return (
+              <code
+                key={`${ball.currentTimeStamp}-${ball.run}`}
+                className={`rounded-sm ${circleColor} w-7 h-7 text-center items-center justify-center flex text-xs font-mono`}
+              >
+                {ball.run}{circileSuffix}
+              </code>
+            );
+          })}
       </div>
     </div>
   );
