@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+h1 {
+	font-size: 2em;
+}
+
+h2 {
+	font-size: 1.5em;
+}
+
+h3 {
+	font-size: 1.17em;
+}
+
+h4 {
+	font-size: 1em;
+}
+
+h5 {
+	font-size: 0.83em;
+}
+
+h6 {
+	font-size: 0.67em;
+}
+
+.primary-btn {
+	background-color: #000;
+	color: '#fff' !important;
+}
+
+.item-shadow {
+	box-shadow: "0 4px 6px rgba(0, 0, 0, 0.1)";
+}
+
+
+.ant-radio-group-solid :where(.css-dev-only-do-not-override-1qhpsh8).ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+	color: #fff !important;
+	background: #000000 !important;
+	border-color: #000000 !important;
+}
+
+
+span {
+	font-weight: 600;
+	font-size: 12px !important;
+	padding: 2px;
+}
+
+.ant-select-item.ant-select-item-option {
+	padding: 0;
+	margin: 0;
+	font-size: 10px;
+}
+
+
+button,
+[type='reset'],
+[type='submit'] {
+	-webkit-appearance: button;
+
+
+}
+
+button:active,
+[type='reset']:active,
+[type='submit']:active {
+	background-color: indigo !important;
+}

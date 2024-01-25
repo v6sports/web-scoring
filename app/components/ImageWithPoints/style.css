@@ -1,0 +1,10 @@
+#canvas-wrap {
+	position: relative
+}
+
+/* Make this a positioned parent */
+#overlay {
+	position: absolute;
+	top: 20px;
+	left: 30px;
+}

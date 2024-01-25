@@ -1,0 +1,53 @@
+{
+  "token": {
+
+    "colorPrimaryBorder": "000",
+    "lineWidth": 0.2,
+    "colorBorder": "#00000069"
+  },
+
+  "components": {
+    "Form": {
+      "boxShadow": "0 2px 4px rgba(0, 0, 0, 0.1)"
+    },
+    "Radio": {
+      "fontSize": 10,
+      "buttonBg": "#000",
+      "buttonCheckedBg": "#fff",
+      "buttonColor": "#000",
+      "buttonSolidCheckedBg": "#000",
+      "buttonSolidCheckedHoverBg": "#000"
+    },
+    "Tabs": {
+      "inkBarColor": "#000",
+      "itemActiveColor": "#000",
+      "itemSelectedColor": "#000"
+    },
+    "Input": {
+      "activeBg": "#fff",
+      "borderRadius": 5,
+
+      "boxShadow": "20px",
+      "activeBorderColor": "#fff",
+      "inputFontSize": 12,
+      "inputFontSizeLG": 14,
+      "inputFontSizeSM": 16,
+      "padding": 10,
+
+      "activeShadow": "0 4px 6px rgba(0, 0, 0, 0.1)"
+    },
+    "Select": {
+      "borderRadius": 5,
+
+      "boxShadow": "20px",
+      "fontSize": 14,
+      "colorBorderBg": "#fff",
+      "padding": 10
+    },
+    "DatePicker": {},
+    "Button": {
+
+      "colorBorder": "#000"
+    }
+  }
+}
