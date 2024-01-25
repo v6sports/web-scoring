@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
 import fsPromises from "fs/promises";
+import fs from "fs";
 import path from "path";
 import { readFileSync } from "fs";
 import moment from "moment";
@@ -40,6 +41,10 @@ export async function GET(req: Request) {
     .catch((error) => console.log("error", error));
   let folderName = `./data/${matchId}`;
   let getFileName = `${folderName}/matchScoreboard.json`;
+	const currentInningPath = `${folderName}/${1}`;
+	const ballByBallFIlePath = `${currentInningPath}/ballByBall.json`;
+	const currentOverFolder = `${currentInningPath}/over`;
+	const currentOverFile = `${currentInningPath}/over/${0}.json`;
   // let getInitialFileName = `${folderName}/matchScoreboardInitial.json`; // only update from the server response
   let getUpdatedFileName = `${folderName}/matchScoreboardUpdated.json`; // update by localResponse As Well
 
@@ -48,6 +53,31 @@ export async function GET(req: Request) {
   } catch (error) {
     console.log("MATCH ALREADY EXISITS");
   }
+
+try {
+	if (!fs.existsSync(currentInningPath)){
+		await fsPromises.mkdir(currentInningPath).catch(e=>{
+			console.log('%croute.ts line:60 e', 'color: #007acc;', e);
+		});;
+	}
+	if (!fs.existsSync(ballByBallFIlePath)){
+		await fsPromises.writeFile(ballByBallFIlePath,"[]",'utf-8').catch(e=>{
+		console.log('%croute.ts line:65 e', 'color: #007acc;', e);
+		});;
+	}
+	if (!fs.existsSync(currentOverFolder)){
+		await fsPromises.mkdir(currentOverFolder).catch(e=>{
+			console.log('%croute.ts line:70 e', 'color: #007acc;', e);
+		});
+	}
+	if (!fs.existsSync(currentOverFile)){
+		await fsPromises.writeFile(currentOverFile,"[]",'utf-8').catch(e=>{
+			console.log('%croute.ts line:75 e', 'color: #007acc;', e);
+		});;
+	}
+} catch (error) {
+console.log('%croute.ts line:79 error', 'color: #007acc;', error);
+}
 
   if (data) {
     fsPromises.writeFile(getFileName, JSON.stringify(data), "utf-8");

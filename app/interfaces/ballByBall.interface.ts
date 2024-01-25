@@ -17,6 +17,7 @@ export interface IballByBall {
   non_attack?: number;
   non_strike?: number;
   ball_number?: 0 | 1 | 2 | 3 | 4 | 5 | 6 ;
+	curr_over_ball?:number;
 	nextBallNumber?:number;
   ball_number_included_extra?: number; // added Extra
   over_number?: number;

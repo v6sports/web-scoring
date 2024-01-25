@@ -1,13 +1,21 @@
+import { IballByBall } from "@/app/interfaces/ballByBall.interface";
+import { IScoreBallByBall } from "@/app/interfaces/scoreBallByBall.interface";
 import { updateMatchScoreBallByBall } from "@/redux/features/slices/ballByBallSlice";
+import { setScoreBallByBall } from "@/redux/features/slices/scoreBallByBallSlice";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { Button, Input, InputNumber } from "antd";
-import React, { useState } from "react";
+import Axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 const Runs = () => {
-  const [selectedButton, setSelectedButton] = useState<string | number | null>(null);
-	const dispacther = useDispatch<AppDispatch>();
-	const selecter = useAppSelector(state => state.ballByBallSlice);
+  const [selectedButton, setSelectedButton] = useState<string | number | null>(
+    null
+  );
+  const dispacth = useDispatch<AppDispatch>();
+  const scoreBallByBallData = useAppSelector(
+    (state) => state.scoreBallByBallSlice
+  );
   const handleButtonClick = (value: string) => {
     if (selectedButton && parseInt(value) == selectedButton) {
       setSelectedButton(null);
@@ -15,55 +23,76 @@ const Runs = () => {
     }
 
     setSelectedButton(parseInt(value));
-
-
   };
 
-	const submitBallByBall = () => {
-
-		let appendBall =
-      selecter?.ball_number && selecter?.ball_number < 6
-        ? selecter?.ball_number + 1
-        : 0+1;
-		let appendOver = appendBall == 1 ? selecter?.over || 0 + 1 : 0;
-		dispacther(
-      updateMatchScoreBallByBall({
-        localId: 0,
-        over: 0,
-        over_number: appendOver,
-        runs: selectedButton ? parseInt(selectedButton) : 0,
-        ball_number: appendBall,
-        extras: 0,
-        is_out: 0,
-        out_by: 0,
-        user_id: "123",
-        who_out: 0,
-        boundary: 0,
+  const fetchScoreBallByBall = async () => {
+    console.log("aa");
+    let fetchScoreApi = await Axios.request({
+      url: "/api/readScore",
+      method: "post",
+      data: {
         match_id: "30128",
-        assist_by: 0,
-        on_attack: 16254,
-        on_strike: 17309,
-        team_runs: 1,
-        non_attack: 14415,
-        non_strike: 17312,
-
-        wicket_type: 0,
-        next_batsman: 0,
-        scoring_area: 0,
         inning_number: 1,
-        bowling_length: 0,
-        non_striker_out: 0,
-        videoURL: "",
-        isUndo: true,
-        overMeta: {
-          overNumber: appendOver,
-          ballNumber: appendBall,
-          isOverEnd: appendBall === 6 ? true : false,
-        },
-      })
-    );
-	}
-  const handleWheel = (e:any) => {
+      },
+    });
+    if (fetchScoreApi.data as IScoreBallByBall) {
+      console.log(fetchScoreApi.data as IballByBall, "sss");
+      dispacth(setScoreBallByBall(fetchScoreApi.data));
+    }
+  };
+  useEffect(() => {
+    fetchScoreBallByBall();
+  }, []);
+
+  const submitBallByBall = async () => {
+    let _lastBall = scoreBallByBallData.fullScore?.lastBallOfOver;
+    let json: IballByBall = {
+      localId: 0,
+      over: 1,
+      over_number: _lastBall?.over_number || 1,
+      ball_number: _lastBall?.nextBallNumber || 1,
+      runs: selectedButton || 0,
+      ball_number_included_extra: _lastBall?.ball_number_included_extra,
+      extra_type: "",
+      nextBallNumber: _lastBall?.nextBallNumber || 1,
+      extras: "",
+      is_out: 0,
+      out_by: 0,
+      user_id: "123",
+      who_out: 0,
+      boundary: 0,
+      match_id: "30128",
+      assist_by: 0,
+      on_attack: 16254,
+      on_strike: 17309,
+      team_runs: 1,
+
+      non_attack: 14415,
+      non_strike: 17312,
+      wicket_type: 0,
+      next_batsman: 0,
+      scoring_area: 0,
+      inning_number: 1,
+      bowling_length: 0,
+      non_striker_out: 0,
+      videoURL: "",
+      isUndo: true,
+      overMeta: {
+        overNumber: 1,
+        ballNumber: 1,
+        isOverEnd: false,
+      },
+    };
+    let fetchScoreApi = await Axios.request({
+      url: "/api/ballByBall",
+      method: "post",
+      data: json,
+    });
+    if (fetchScoreApi.data) {
+      fetchScoreBallByBall();
+    }
+  };
+  const handleWheel = (e: any) => {
     e.preventDefault();
   };
 
@@ -160,7 +189,7 @@ const Runs = () => {
           ""
         )}
         <Button
-				onClick={()=> submitBallByBall()}
+          onClick={() => submitBallByBall()}
           className={`flex-1 ${"bg-green-600"} text-white  text-center items-center p-10 text-xl font-extrabold uppercase`}
         >
           Save
