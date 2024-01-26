@@ -1,3 +1,4 @@
+import { inningsRunRate } from "@/app/Utils/utils";
 import { useAppSelector } from "@/redux/store";
 import { Collapse } from "antd";
 import React, { useEffect } from "react";
@@ -9,22 +10,25 @@ const LiveScore = () => {
   useEffect(() => {
     // This function will be called whenever scoreBallByBallData changes
     // You can perform any update logic here
-    console.log("Redux state has been updated:", scoreBallByBallData);
+
   }, [scoreBallByBallData]);
+	const fullScoreBoard = scoreBallByBallData.fullScore;
   return (
     <div className="flex flex-col">
       <div className="flex flex-row items-center gap-2">
         <code className="text-lg font-light">IND</code>
         <code className="text-lg font-extrabold">
-          {scoreBallByBallData.fullScore?.totalRuns}
+          {fullScoreBoard?.totalRuns}
         </code>
         <code className="text-lg font-light">
-          ( {scoreBallByBallData.fullScore?.totalOvers})
+          ( {fullScoreBoard?.totalOvers})
         </code>
         <code className="text-xs font-light text-purple-600">
           CR{" "}
-          {(scoreBallByBallData.fullScore?.totalRuns /
-            (scoreBallByBallData.fullScore?.validBalls/6))?.toFixed(2) ?? 0}
+          {inningsRunRate(
+            fullScoreBoard?.totalRuns ? fullScoreBoard?.totalRuns : 0,
+            fullScoreBoard?.validBalls ? fullScoreBoard?.validBalls : 0
+          )}
         </code>
       </div>
       <Collapse>

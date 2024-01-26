@@ -2,11 +2,11 @@
 
 # dependencies
 /node_modules
+/data
 /.pnp
 .pnp.js
 .yarn/install-state.gz
 
-data/
 # testing
 /coverage
 

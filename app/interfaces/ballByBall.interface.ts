@@ -10,10 +10,10 @@ export interface IballByBall {
   boundary?: number;
   match_id?: string;
   assist_by?: number;
-  on_attack?: number;
+  on_attack?: number | '';
   on_strike?: number;
   team_runs?: number;
-  extra_type?: "wide" | "no-ball" | "bye" | "leg-bye";
+  extra_type?: "wide" | "no-ball" | "bye" | "leg-bye" | '';
   non_attack?: number;
   non_strike?: number;
   ball_number?: 0 | 1 | 2 | 3 | 4 | 5 | 6 ;

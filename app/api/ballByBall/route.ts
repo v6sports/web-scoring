@@ -10,6 +10,7 @@ import {
   IballsOfOver,
 } from "@/app/interfaces/currentOver.interface";
 import { overBalls } from "@/app/Utils/overBalls.utils";
+import { strikeConfirm } from "@/app/Utils/playersUtils";
 
 export async function POST(req: Request) {
   const ballScore: IballByBall = await req.json();
@@ -20,9 +21,9 @@ export async function POST(req: Request) {
     });
   }
 
-	// return NextResponse.json({
-	// 	ballScore
-	// })
+  // return NextResponse.json({
+  // 	ballScore
+  // })
   // check for the matchID
   const matchPath = `./data/${ballScore.match_id}`;
   const currentInningPath = `${matchPath}/${ballScore.inning_number}`;
@@ -94,7 +95,10 @@ export async function POST(req: Request) {
     ballScore,
     ballScore?.inning_number
   );
+	console.log(ballScore.on_strike,"BEFORE---");
 
+  let rrr = strikeConfirm(ballScore);
+  // console.log(rrr);
   const cloneNextBallNumber = overBallbyBallData?.ballByBall.ball_number;
   const cloneCurrentBallNumber =
     overBallbyBallData?.ballByBall.ball_number - 1 == -1
@@ -103,7 +107,7 @@ export async function POST(req: Request) {
   currentOverParsedData.push({
     currentOverNumber:
       cloneCurrentBallNumber == 6
-        ? overBallbyBallData.ballByBall.over_number + 1
+        ? overBallbyBallData.ballByBall.over_number
         : overBallbyBallData.ballByBall.over_number,
     ballNumber: cloneCurrentBallNumber,
     nextBallNumber: cloneNextBallNumber,
@@ -129,10 +133,11 @@ export async function POST(req: Request) {
   const lastBall = allBallScore[allBallScore.length - 1];
   if (lastBall?.localId) ballScore["localId"] = lastBall?.localId + 1;
   else ballScore["localId"] = 1;
+
   ballScore["currentTimeStamp"] = moment().format("hh:mm:ss");
   ballScore["over_number"] =
     cloneCurrentBallNumber == 6
-      ? overBallbyBallData.ballByBall.over_number + 1
+      ? overBallbyBallData.ballByBall.over_number
       : overBallbyBallData.ballByBall.over_number;
   ballScore["nextBallNumber"] = cloneNextBallNumber;
   ballScore["ball_number"] = cloneCurrentBallNumber;
@@ -144,6 +149,13 @@ export async function POST(req: Request) {
     JSON.stringify(allBallScore),
     "utf-8"
   );
+
+  // Change Strike Post saving the data of currentBall START
+  ballScore["on_strike"] = rrr.onStrikeBatsman;
+  ballScore["non_strike"] = rrr.nonStrikeBatsman;
+
+	console.log(`${JSON.stringify(rrr)}`,"GET COOL PEOPLE")
+  // Change Strike Post saving the data of currentBall START
   return NextResponse.json({
     balls: ballScore,
     currentOver: currentOverParsedData,

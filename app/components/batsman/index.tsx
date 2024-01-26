@@ -1,12 +1,38 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Select } from "antd";
-import { useAppSelector } from "@/redux/store";
+import { AppDispatch, useAppSelector } from "@/redux/store";
 import { Player } from "@/app/interfaces/matchScoreboard.interface";
 import getPlayers from "@/app/Utils/playersUtils";
+import { IballByBall } from "@/app/interfaces/ballByBall.interface";
+import { useDispatch } from "react-redux";
+import {
+  setBatterNonStrike,
+  setBatterOnStrike,
+} from "@/redux/features/slices/ballByBallSlice";
+import Axios from "axios";
+import { batsmanDetails } from "@/app/interfaces/batter.interface";
+import { calculateStrikeRate, checkNullfy } from "@/app/Utils/utils";
+import { setBatsman } from "@/redux/features/slices/inningsTrackSlice";
 
 const Batsman: React.FC<any> = (props) => {
   const selector = useAppSelector((state) => state.matchSliceReducer);
+  const ballByBallResponse = useAppSelector((state) => state.ballByBallSlice);
+  const [onStrikeStats, setOnStrikeStats] = useState<batsmanDetails>({
+    boundariesInFour: 0,
+    boundariesInSix: 0,
+    runs: 0,
+    numberOfBallsPlayed: 0,
+    player_id: "",
+  });
+  const [nonStrikeStats, setNonStrikeStats] = useState<batsmanDetails>({
+    boundariesInFour: 0,
+    boundariesInSix: 0,
+    runs: 0,
+    numberOfBallsPlayed: 0,
+    player_id: "",
+  });
+  const dispatch = useDispatch<AppDispatch>();
   const [battingTeamPlayers, setBattingTeamPlayer] = useState<Player[]>([]);
 
   useEffect(() => {
@@ -26,6 +52,39 @@ const Batsman: React.FC<any> = (props) => {
     return () => setBattingTeamPlayer([]);
   }, [selector?.inning_number && selector]);
 
+  const battingStats = async (playerId) => {
+    const fetchBattingStats = await Axios.request({
+      url: "/api/batsmanRunsScoredInInnings",
+      method: "POST",
+      data: {
+        matchId: selector.match_id,
+        inningNumber: selector?.inning_number,
+        playerId: playerId,
+      },
+    });
+    return fetchBattingStats.data;
+  };
+
+  useEffect(() => {
+    if (ballByBallResponse.non_strike != -1 &&  ballByBallResponse.non_strike) {
+      battingStats(ballByBallResponse.non_strike).then((res) => {
+        setNonStrikeStats(res);
+      });
+    }
+    if (ballByBallResponse.on_strike != -1 && ballByBallResponse.on_strike) {
+			dispatch(setBatsman(ballByBallResponse.on_strike));
+      battingStats(ballByBallResponse.on_strike).then((res) => {
+        setOnStrikeStats(res);
+      });
+    }
+  }, [JSON.stringify(ballByBallResponse)]);
+
+  const strikerBatsman = (player: number) => {
+    dispatch(setBatterOnStrike(player));
+  };
+  const nonStrikerBatsman = (player: number) => {
+    dispatch(setBatterNonStrike(player));
+  };
   return (
     <div className="flex flex-col rounded-lg w-full justify-center items-center bg-green-100">
       {/* <p className="uppercase text-xs font-bold underline">Batsman</p> */}
@@ -33,42 +92,59 @@ const Batsman: React.FC<any> = (props) => {
         id="playerOnStrike "
         className="flex-1 flex flex-row items-center  gap-4"
       >
-        <Select
-          key={"Shewag"}
-          variant="filled"
-					style={{ width: '150px' }}
-          className="bg-green-300 rounded border-1 border-purple-800 w-36"
-          defaultValue={"sachin"}
-        >
-          {battingTeamPlayers?.flatMap((player) => {
-            return (
-              <Select.Option key={player.player_id}>
-                {player.name}
-              </Select.Option>
-            );
-          })}
-        </Select>
+        {battingTeamPlayers.length > 0 && (
+          <Select
+            key={parseInt(ballByBallResponse?.on_strike)}
+            variant="filled"
+            style={{ width: "150px" }}
+            onSelect={strikerBatsman}
+            open={!checkNullfy(ballByBallResponse?.on_strike)}
+            className="bg-green-300 rounded border-1 border-purple-800 w-36"
+            defaultValue={ballByBallResponse?.on_strike}
+          >
+            {battingTeamPlayers?.flatMap((player) => {
+              return ballByBallResponse?.non_strike != player.player_id ? (
+                <Select.Option key={player.player_id}>
+                  {player.name}
+                </Select.Option>
+              ) : (
+                <></>
+              );
+            })}
+          </Select>
+        )}
 
         <div className="flex flex-row gap-3">
           <div className="flex flex-col justify-center">
             <p className="text-center  font-extralight text-sm">R</p>
-            <p className="text-center text-xs">100</p>
+            <p className="text-center text-xs">{onStrikeStats.runs || 0}</p>
           </div>
           <div className="flex flex-col">
             <p className="text-center  font-extralight text-sm">B</p>
-            <p className="text-center text-xs">100</p>
+            <p className="text-center text-xs">
+              {onStrikeStats.numberOfBallsPlayed || 0}
+            </p>
           </div>
           <div className="flex flex-col">
             <p className="text-center  font-extralight text-sm">4</p>
-            <p className="text-center text-xs">10</p>
+            <p className="text-center text-xs">
+              {onStrikeStats.boundariesInFour || 0}
+            </p>
           </div>
           <div className="flex flex-col">
             <p className="text-center font-extralight text-sm">6</p>
-            <p className="text-center text-xs">6</p>
+            <p className="text-center text-xs">
+              {onStrikeStats.boundariesInSix || 0}
+            </p>
           </div>
           <div className="flex flex-col">
             <p className="text-center  font-extralight text-sm">SR</p>
-            <p className="text-center text-xs">100</p>
+            <p className="text-center text-xs">
+              {calculateStrikeRate(
+                onStrikeStats.runs,
+                onStrikeStats.numberOfBallsPlayed
+              )}
+            </p>
           </div>
         </div>
 
@@ -80,12 +156,20 @@ const Batsman: React.FC<any> = (props) => {
         </div>
       </div>
       <div id="playerNOnStrike " className="flex flex-row items-center  gap-4">
-        <Select style={{ width: '150px' }} key={"Shewag"} defaultValue={"Shewag"}>
+        <Select
+          style={{ width: "150px" }}
+          open={!checkNullfy(ballByBallResponse?.non_strike)}
+          onSelect={nonStrikerBatsman}
+          key={parseInt(ballByBallResponse?.non_strike)}
+          defaultValue={ballByBallResponse?.non_strike}
+        >
           {battingTeamPlayers?.flatMap((player) => {
-            return (
+            return ballByBallResponse?.on_strike != player.player_id ? (
               <Select.Option key={player.player_id}>
                 {player.name}
               </Select.Option>
+            ) : (
+              <></>
             );
           })}
         </Select>
@@ -93,23 +177,36 @@ const Batsman: React.FC<any> = (props) => {
         <div className="flex flex-row gap-3">
           <div className="flex flex-col w-full">
             {/* <p className="text-center">R</p> */}
-            <p className="text-center text-xs w-full">100</p>
+            <p className="text-center text-xs w-full">
+              {nonStrikeStats.runs || 0}
+            </p>
           </div>
           <div className="flex flex-col w-full">
             {/* <p className="text-center">B</p> */}
-            <p className="text-center text-xs w-full">100</p>
+            <p className="text-center text-xs w-full">
+              {nonStrikeStats.numberOfBallsPlayed || 0}
+            </p>
           </div>
           <div className="flex flex-col w-full">
             {/* <p className="text-center">4'S</p> */}
-            <p className="text-center text-xs w-full">10</p>
+            <p className="text-center text-xs w-full">
+              {nonStrikeStats.boundariesInFour || 0}
+            </p>
           </div>
           <div className="flex flex-col w-full">
             {/* <p className="text-center">6'S</p> */}
-            <p className="text-center text-xs w-full">6</p>
+            <p className="text-center text-xs w-full">
+              {nonStrikeStats.boundariesInSix || 0}
+            </p>
           </div>
           <div className="flex flex-col w-full">
             {/* <p className="text-center">SR</p> */}
-            <p className="text-center text-xs w-full">100</p>
+            <p className="text-center text-xs w-full">
+              {calculateStrikeRate(
+                nonStrikeStats.runs,
+                nonStrikeStats.numberOfBallsPlayed
+              )}
+            </p>
           </div>
         </div>
         <div>

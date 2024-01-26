@@ -1,6 +1,9 @@
 import { Button, Modal, Tooltip } from "antd";
 import React, { useState } from "react";
 import Players from "../players";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { resetFielder, resetOutMethod, setOutMethod } from "@/redux/features/slices/inningsTrackSlice";
 
 const allWickets = [
   {
@@ -97,12 +100,17 @@ const Wicket = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedWicketType, setSelectedWicketType] = useState(null);
   const [selectedButton, setSelectedButton] = useState(null);
+	const dispatch = useDispatch<AppDispatch>();
 
-  const handleButtonClick = (value) => {
+	const handleButtonClick = (value) => {
     if (value == selectedWicketType) {
       setSelectedWicketType(null);
+			dispatch(resetOutMethod());
+			dispatch(resetFielder());
       return;
     }
+
+		dispatch(setOutMethod(value));
     setSelectedWicketType(value);
   };
 
@@ -118,7 +126,7 @@ const Wicket = () => {
     setIsModalOpen(false);
   };
   return (
-    <div>
+    <div className="flex">
       <Modal
         title="Basic Modal"
         open={isModalOpen}
@@ -161,12 +169,12 @@ const Wicket = () => {
           )}
         </div>
       </Modal>
-      <div className="bottom-0 absolute">
+      <div className="">
         <Button
           onClick={() => showModal()}
-          className="bg-danger text-white w-34 h-14"
+          className="bg-red-400 text-black w-34 h-14 p-10"
         >
-          Wicket/Appleal
+          Wicket
         </Button>
       </div>
     </div>

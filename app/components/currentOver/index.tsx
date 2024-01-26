@@ -8,7 +8,7 @@ const CurrentOver = () => {
 	useEffect(() => {
     // This function will be called whenever scoreBallByBallData changes
     // You can perform any update logic here
-    console.log("Redux state has been updated:", scoreBallByBallData);
+
   }, [scoreBallByBallData]);
   return (
     <div key="Current-over-div">
@@ -47,7 +47,7 @@ const CurrentOver = () => {
                 key={`${ball.currentTimeStamp}-${ball.run}`}
                 className={`rounded-sm ${circleColor} w-7 h-7 text-center items-center justify-center flex text-xs font-extrabold`}
               >
-                {ball.run}{circileSuffix}
+                {ball.run || '0'}{circileSuffix}
               </code>
             );
           })}

@@ -19,6 +19,7 @@ import Batsman from "@/app/components/batsman";
 import Axios from "axios";
 import { getMatchScoreboardInformation } from "@/redux/features/slices/matchSlice";
 import { showAlert } from "@/app/Utils/utils";
+import { setInningNumber, setMatchId } from "@/redux/features/slices/inningsTrackSlice";
 
 const Scorebard = ({ params }: { params: { slug: string } }) => {
   const [loading, setLoading] = useState(false);
@@ -33,6 +34,8 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
       setLoading(false);
     });
     setLoading(false);
+		dispatch(setMatchId(params.slug))
+		dispatch(setInningNumber(1)); // TODO - change Inning number to something else
     dispatch(getMatchScoreboardInformation(fetchMatchById.data));
   };
   useEffect(() => {
@@ -84,7 +87,6 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
                   <div>
                     <WagonWheel />
                     <PitchMap />
-                    <Wicket />
                   </div>
 
                   <div></div>

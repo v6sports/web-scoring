@@ -20,6 +20,50 @@ export const ballByBallSlice = createSlice({
         extras: action.payload.extras,
       };
     },
+    emptyExtras: (state) => {
+      return {
+        ...state,
+        extra_type: "",
+        extras: -1,
+      };
+    },
+    setBatterOnStrike: (state, action: PayloadAction<number>) => {
+      return {
+        ...state,
+        on_strike: action.payload,
+      };
+    },
+    resetBatterOnStrike: (state) => {
+      return {
+        ...state,
+        on_strike: -1,
+      };
+    },
+
+    setBatterNonStrike: (state, action: PayloadAction<number>) => {
+      return {
+        ...state,
+        non_strike: action.payload,
+      };
+    },
+    resetBatterNonStrike: (state) => {
+      return {
+        ...state,
+        non_strike: -1,
+      };
+    },
+    setBowlerOnAttack: (state, action: PayloadAction<number>) => {
+      return {
+        ...state,
+        on_attack: action.payload,
+      };
+    },
+    setBowlerEmpty: (state) => {
+      return {
+        ...state,
+        on_attack: "",
+      };
+    },
     updateBolwingLength: (state, action: PayloadAction<IballByBall>) => {
       return {
         ...state,
@@ -37,6 +81,17 @@ export const ballByBallSlice = createSlice({
   },
 });
 
-export const { updateMatchScoreBallByBall, updateExtras } =
-  ballByBallSlice.actions;
+export const {
+  updateMatchScoreBallByBall,
+  updateExtras,
+  updateBolwingLength,
+  updateBatterShot,
+  setBatterOnStrike,
+  setBatterNonStrike,
+  setBowlerOnAttack,
+  setBowlerEmpty,
+  resetBatterNonStrike,
+  resetBatterOnStrike,
+  emptyExtras,
+} = ballByBallSlice.actions;
 export default ballByBallSlice.reducer;

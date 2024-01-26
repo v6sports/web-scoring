@@ -2,6 +2,7 @@
 import fsPrmoise from "fs/promises";
 import { IballByBall } from "@/app/interfaces/ballByBall.interface";
 import { NextResponse } from "next/server";
+import { strikeConfirm } from "@/app/Utils/playersUtils";
 
 export async function POST(req: Request) {
   const ballScore: IballByBall = await req.json();
@@ -93,7 +94,7 @@ export async function POST(req: Request) {
         validBalls += 1;
       }
 
-      if (over.extra_type == "wide") {
+      if ( over.extra_type == "wide") {
         let extraRunsWide = extraRuns.wide + 1;
         if (over?.runs && over?.runs > 0)
           extraRunsWide = extraRunsWide + over.runs;
@@ -125,12 +126,25 @@ export async function POST(req: Request) {
     totalOvers = Math.floor(validBalls / 6) + (validBalls % 6) / 10;
   }
 	const sumOfExtras = Object.values(extraRuns).reduce((total, value) => total + value, 0);
+
+	let lastBallOfOver : IballByBall = readAllOversData[readAllOversData.length - 1];
+	let rrr = strikeConfirm(lastBallOfOver);
+
+	try {
+		lastBallOfOver['on_strike'] = rrr.onStrikeBatsman;
+		lastBallOfOver['non_strike'] = rrr.nonStrikeBatsman;
+	} catch (error) {
+
+	}
+
   return NextResponse.json({
     // overByOver: readAllOversData,
     fullScore: {
       currentOver: currentOver,
       previousOver: lastOver,
-      lastBallOfOver: readAllOversData[readAllOversData.length - 1],
+      lastBallOfOver:{
+				...lastBallOfOver
+			},
       validBalls: validBalls,
 			extraRuns,
       totalOvers,
