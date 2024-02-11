@@ -3,6 +3,8 @@ export interface IcurrentOver {
 }
 
 export interface IballsOfOver {
+	runs: number;
+	batsmanId: number | undefined;
   run?: number;
   currentOverNumber?: number;
   ballNumber?: number;

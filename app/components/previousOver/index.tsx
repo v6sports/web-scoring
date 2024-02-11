@@ -1,4 +1,5 @@
 import { useAppSelector } from "@/redux/store";
+import { Tooltip } from "antd";
 import React, { useEffect } from "react";
 
 const PreviousOver = () => {
@@ -24,30 +25,43 @@ const PreviousOver = () => {
           scoreBallByBallData.fullScore?.previousOver?.map((ball) => {
 						let circleColor = 'bg-slate-300';
 						let circileSuffix = ''
+						let completeMessage = ''
+						console.log(ball,"GET BALL");
 						if (ball?.extra?.type == "leg-bye") {
               // circleColor = "bg-orange";
               circileSuffix = "LB";
+							completeMessage = 'Leg Bye'
             }
 						if (ball?.extra?.type == "bye") {
               circleColor = "bg-red";
               circileSuffix = "B";
+							completeMessage = 'Bye'
             }
 						if (ball?.extra?.type == "no-ball") {
               circleColor = "bg-red-300";
               circileSuffix = "NB";
+							completeMessage = 'No Ball'
+            }
+						if (ball?.is_out != -1) {
+              circleColor = "bg-blue-400";
+              circileSuffix = "W";
+							completeMessage = 'Wicket'
             }
 
 						if (ball?.extra?.type == "wide") {
               circleColor = "bg-purple-300";
               circileSuffix = "WD";
+							completeMessage = 'Wide Ball'
             }
-								console.log(ball?.extra?.type,"BALLBYBALL")
+
             return (
               <code
                 key={`${ball.currentTimeStamp}-${ball.run}`}
                 className={`rounded-sm ${circleColor} w-7 h-7 text-center items-center justify-center flex text-xs font-mono`}
               >
-                {ball.run || 0}{circileSuffix}
+              <Tooltip title={completeMessage || `${ball.run || '0'} run scored`}>
+                {ball.run || '0'}{circileSuffix}
+								</Tooltip>
               </code>
             );
           })}

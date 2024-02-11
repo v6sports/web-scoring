@@ -21,14 +21,7 @@ const bowlingStylesFast = [
   { value: "fullToss", label: "Full toss", bowlerType: "fast" },
   { value: "beamer", label: "Beamer", bowlerType: "fast" },
 
-  // mediums
-  { value: "lengthBall", label: "Length-ball", bowlerType: "medium" },
-  { value: "goodLengthM", label: "Gd-length", bowlerType: "medium" },
-  { value: "shortM", label: "Srt-length", bowlerType: "medium" },
-  { value: "offCutterM", label: "Off-cutter", bowlerType: "medium" },
-  { value: "legCutterM", label: "Leg-cutter", bowlerType: "medium" },
-  { value: "slowerBallM", label: "Slower", bowlerType: "medium" },
-  { value: "knuckleBallM", label: "Knuckle", bowlerType: "medium" },
+
 
   // spinners
   { value: "offSpin", label: "Off-spin", bowlerType: "spinner" },
@@ -46,13 +39,15 @@ const bowlingStylesFast = [
 
 const bowlingTypesButtons = (types: [], bolwerType = "") => {
   return (
+		<div className="flex flex-col w-full">
     <Radio.Group
       options={types.filter((types) => types.bowlerType == bolwerType)}
-      className="grid grid-cols-3 sm:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 md:grid-cols-2 mt-0"
+      className="grid grid-cols-3 sm:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 md:grid-cols-2 mt-0 p-2 w-full"
       optionType="button"
-      size="small"
+      size="large"
       buttonStyle={"solid"}
     />
+		</div>
   );
 };
 
@@ -66,12 +61,7 @@ const items: TabsProps["items"] = [
     key: "spin",
     label: "Spin",
     children: bowlingTypesButtons(bowlingStylesFast, "spinner"),
-  },
-  {
-    key: "medium",
-    label: "Medium",
-    children: bowlingTypesButtons(bowlingStylesFast, "medium"),
-  },
+  }
 ];
 
 const onChange = (key: string) => {
@@ -80,14 +70,16 @@ const onChange = (key: string) => {
 
 const BallLength = () => {
   return (
+		<div className="flex flex-col w-full">
     <Tabs
       type="card"
-      size="small"
+      size="middle"
       animated={true}
-      defaultActiveKey="1"
+      defaultActiveKey="2"
       items={items}
       onChange={onChange}
     />
+		</div>
   );
 };
 

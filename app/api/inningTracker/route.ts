@@ -1,6 +1,7 @@
 import { IinningTracker } from "@/app/interfaces/inningsTracker.interface";
 import { NextResponse } from "next/server";
 import fsPromise from "fs/promises";
+import moment from "moment";
 /**
  *
  * @param req
@@ -48,7 +49,22 @@ export async function POST(req: Request) {
 
   // New data will be not pushed if read Flag is False
   if (isRead === false) {
-    readInningTrackerFile.push(bowlerStats);
+
+		let readInningTrackerFile: Array<{
+			timeStamp: string;
+			batsman_player_id?: string | number;
+			bolwer_player_id?: string | number;
+			over_number?: string | number;
+			ball_number?: string | number;
+			// ... add other properties here
+			isRead?: boolean;
+		}> = await fsPromise.readFile(fileForInningTracker, "utf-8");
+		readInningTrackerFile = JSON.parse(readInningTrackerFile); // Remove this line
+
+		readInningTrackerFile.push({
+			...bowlerStats,
+			timeStamp: moment().format("DD-MM-YYYY HH:mm:ss").toString(),
+		});
     await fsPromise
       .writeFile(
         fileForInningTracker,
@@ -57,10 +73,15 @@ export async function POST(req: Request) {
       )
       .catch((e) => {
         console.log("writing failed");
+				return NextResponse.json({
+					status: false,
+
+				});
       });
   }
 
   return NextResponse.json({
-    readInningTrackerFile,
-  });
+		status: true,
+
+	});
 }

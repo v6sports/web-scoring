@@ -5,12 +5,20 @@ import ballByBallSlice from "./features/slices/ballByBallSlice";
 import { TypedUseSelectorHook, UseSelector, useSelector } from "react-redux";
 import scoreBallByBallSlice from "./features/slices/scoreBallByBallSlice";
 import inningsTrackSlice from "./features/slices/inningsTrackSlice";
+import loadingSlice from "./features/slices/scoreboardProgressSlice";
+import battingPlayerSlice from "./features/slices/teams/battingTeamSlice";
+import bowlingPlayerSlice from "./features/slices/teams/bowlingTeamSlice";
+import matchSaveSlice from "./features/slices/matchSaveSlice";
 export const store = configureStore({
   reducer: {
     matchSliceReducer,
     ballByBallSlice,
     scoreBallByBallSlice,
     inningsTrackSlice,
+    loadingSlice,
+    matchSaveSlice,
+    battingPlayerSlice,
+    bowlingPlayerSlice,
   },
 });
 

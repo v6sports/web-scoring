@@ -111,7 +111,10 @@ export async function POST(req: Request) {
         : overBallbyBallData.ballByBall.over_number,
     ballNumber: cloneCurrentBallNumber,
     nextBallNumber: cloneNextBallNumber,
+    bolwerId: ballScore.on_attack,
+		batsmanId: ballScore.on_strike,
     run: ballScore.runs,
+		...ballScore,
     currentTimeStamp: moment().format("hh:mm:ss"),
     extra: {
       extraRun: ballScore.extras,

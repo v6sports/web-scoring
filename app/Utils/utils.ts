@@ -22,7 +22,6 @@ const showAlert = (
  */
 
 const checkNullfy = (data: string | number) => {
-  console.log(data, 'A""A"A"A"');
   if (data == -1) return false;
   if (!data) return false;
   else return true;

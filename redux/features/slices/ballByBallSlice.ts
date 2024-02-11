@@ -61,7 +61,7 @@ export const ballByBallSlice = createSlice({
     setBowlerEmpty: (state) => {
       return {
         ...state,
-        on_attack: "",
+        on_attack: -1,
       };
     },
     updateBolwingLength: (state, action: PayloadAction<IballByBall>) => {

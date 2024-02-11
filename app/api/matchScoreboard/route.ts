@@ -13,6 +13,7 @@ type ResponseData = {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const matchId = searchParams.get("matchId");
+	const inningNumber =  searchParams.get('inning')
   if (!matchId) {
     return NextResponse.json({
       status: false,
@@ -32,21 +33,32 @@ export async function GET(req: Request) {
   };
 
   const today = moment();
-  let data = await fetch(
+
+  let folderName = `./data/${matchId}`;
+  let getFileName = `${folderName}/matchScoreboard.json`;
+	const currentInningPath = `${folderName}/${inningNumber}`;
+	const ballByBallFIlePath = `${currentInningPath}/ballByBall.json`;
+	const currentOverFolder = `${currentInningPath}/over`;
+	const currentOverFile = `${currentInningPath}/over/${0}.json`;
+  // let getInitialFileName = `${folderName}/matchScoreboardInitial.json`; // only update from the server response
+  let getUpdatedFileName = `${folderName}/matchScoreboardUpdated.json`; // update by localResponse As Well
+
+	try {
+		let savedData =await readFileSync(getUpdatedFileName,'utf-8');
+		if(savedData){
+			return NextResponse.json(JSON.parse(savedData));
+		}
+	} catch (error) {
+		console.log(error);
+	}
+
+	let data = await fetch(
     `http://127.0.0.1/api/v1/fullscoreboard?match_id=${matchId}`,
     requestOptions
   )
     .then((response) => response.text())
     .then((result) => result)
     .catch((error) => console.log("error", error));
-  let folderName = `./data/${matchId}`;
-  let getFileName = `${folderName}/matchScoreboard.json`;
-	const currentInningPath = `${folderName}/${1}`;
-	const ballByBallFIlePath = `${currentInningPath}/ballByBall.json`;
-	const currentOverFolder = `${currentInningPath}/over`;
-	const currentOverFile = `${currentInningPath}/over/${0}.json`;
-  // let getInitialFileName = `${folderName}/matchScoreboardInitial.json`; // only update from the server response
-  let getUpdatedFileName = `${folderName}/matchScoreboardUpdated.json`; // update by localResponse As Well
 
   try {
     await fsPromises.mkdir(folderName);

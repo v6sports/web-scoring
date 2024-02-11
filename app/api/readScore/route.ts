@@ -3,12 +3,14 @@ import fsPrmoise from "fs/promises";
 import { IballByBall } from "@/app/interfaces/ballByBall.interface";
 import { NextResponse } from "next/server";
 import { strikeConfirm } from "@/app/Utils/playersUtils";
+import { IinningTracker } from "@/app/interfaces/inningsTracker.interface";
 
 export async function POST(req: Request) {
   const ballScore: IballByBall = await req.json();
   const matchPath = `./data/${ballScore.match_id}`;
+	const inningsTracker = `./data/${ballScore.match_id}/${ballScore.inning_number}/inningsTracker.json`;
 
-  fsPrmoise.access(`${matchPath}`).catch((e) => {
+	fsPrmoise.access(`${matchPath}`).catch((e) => {
     console.log("No Match Found");
     return NextResponse.json({
       status: false,
@@ -137,11 +139,33 @@ export async function POST(req: Request) {
 
 	}
 
+
+	// calculate the wickets in the innings
+
+	let wickets: any[] = [];
+
+
+	try {
+
+		await fsPrmoise.readFile(inningsTracker,"utf-8").then((data:IinningTracker) => {
+			data = JSON.parse(data);
+
+			data.forEach((e) => {
+				if (e?.out_method != -1) {
+					wickets.push(e);
+				}
+			})
+		})
+	} catch (error) {
+
+	}
+
   return NextResponse.json({
     // overByOver: readAllOversData,
     fullScore: {
       currentOver: currentOver,
       previousOver: lastOver,
+			wickets:wickets,
       lastBallOfOver:{
 				...lastBallOfOver
 			},

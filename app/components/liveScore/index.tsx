@@ -18,7 +18,7 @@ const LiveScore = () => {
       <div className="flex flex-row items-center gap-2">
         <code className="text-lg font-light">IND</code>
         <code className="text-lg font-extrabold">
-          {fullScoreBoard?.totalRuns}
+          {fullScoreBoard?.totalRuns} / {fullScoreBoard?.wickets?.length}
         </code>
         <code className="text-lg font-light">
           ( {fullScoreBoard?.totalOvers})

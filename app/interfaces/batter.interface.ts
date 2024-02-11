@@ -8,8 +8,8 @@ export interface batter {
 
 export interface batsmanDetails {
   name?: string;
-  player_id: string;
-  user_id?: string;
+  player_id:  string | number;
+  user_id?:  string | number;
   boundariesInFour: number;
   boundariesInSix: number;
   numberOfBallsPlayed: number;

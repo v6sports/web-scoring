@@ -12,17 +12,20 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Wicket from "../wicket";
 import { resetBatsman, resetBowler, resetOutMethod, setBallNumber, setBatsman, setBowler, setOverNumber } from "@/redux/features/slices/inningsTrackSlice";
+import { setLoadingFalse,setLodingTrue } from "@/redux/features/slices/scoreboardProgressSlice";
 
 const Runs = () => {
   const [selectedButton, setSelectedButton] = useState<string | number | null>(
     null
   );
+	const [isSaveButtonEnabled, setSaveButtonEnabled] = useState(false);
   const dispacth = useDispatch<AppDispatch>();
 	const wicketSelecor = useAppSelector((state) => state.inningsTrackSlice);
+	const matchSaveStatus = useAppSelector((state) => state.matchSaveSlice);
   const scoreBallByBallData = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
-  const runTicket = useAppSelector((state) => state.ballByBallSlice);
+  let runTicket = useAppSelector((state) => state.ballByBallSlice);
   const handleButtonClick = (value: string) => {
     if (selectedButton && parseInt(value) == selectedButton) {
       setSelectedButton(null);
@@ -38,8 +41,8 @@ const Runs = () => {
       url: "/api/readScore",
       method: "post",
       data: {
-        match_id: "30128",
-        inning_number: 1,
+        match_id: wicketSelecor.match_id,
+        inning_number: wicketSelecor.inning_number,
       },
     });
     if (fetchScoreApi.data as IScoreBallByBall) {
@@ -55,15 +58,36 @@ const Runs = () => {
   };
   useEffect(() => {
     fetchScoreBallByBall();
+		isSaveEnabled();
   }, []);
 
+	useEffect(() => {
+		isSaveEnabled();
+	}, [JSON.stringify(runTicket)]);
   const submitBallByBall = async () => {
 
+		if(runTicket.on_attack === -1) {
+			message.destroy()
+				message.error("Please select a bowler");
+				return;
+		}
+
+		if(runTicket.on_strike === -1) {
+			message.destroy()
+				message.error("Please select a Striker");
+				return;
+		}
+		if(runTicket.non_strike === -1) {
+			message.destroy()
+				message.error("Please select a Non Striker");
+				return;
+		}
 		message.destroy();
 		message.loading("Please wait");
-
+		dispacth(setLodingTrue());
 		let _lastBall = scoreBallByBallData.fullScore?.lastBallOfOver;
 		const overNumber = runTicket.over_number;
+		const batsmanOnStrike = runTicket.on_strike
 		const ballNumber = _lastBall?.nextBallNumber || 1;
 		/** LOGIC FOR WICKET WRITING HERE ONLY FOR NOW START */
 		/**
@@ -75,6 +99,7 @@ const Runs = () => {
 
 			message.destroy();
 			message.loading("Saving Wicket");
+			console.log(runTicket.on_strike,"GET ACTIVE PACE")
 				dispacth(setBatsman(runTicket.on_strike));
 				dispacth(setBowler(runTicket.on_attack));
 				dispacth(setOverNumber(overNumber));
@@ -107,6 +132,8 @@ const Runs = () => {
 		if (out_method == -1) {
       batsman_player_id = -1;
     }
+		console.log(runTicket);
+
 		let json: IballByBall = {
       localId: 0,
       over: overNumber,
@@ -158,42 +185,50 @@ const Runs = () => {
         // dispacth(resetBatsman());
         // dispacth(resetBowler());
         // dispacth(resetOutMethod());
-      });
+      }).catch(e=>{
+				message.error("Something went wrong");
+				dispacth(setLoadingFalse());
+			});
     }
 
 		/**
 		 * SAVE WICKET AND
 		 */
 
-		if (runTicket?.on_strike) {
+		if (true) {
+			runTicket = json;
       let batterJson: batter = {
         matchId: match_id,
         inningNumber: inning_number,
         batsmanList: {
           boundariesInFour: selectedButton == "44" ? 1 : 0,
           boundariesInSix: selectedButton == "66" ? 1 : 0,
-          runs: runsClicked,
+          runs: runsClicked ? runsClicked : 0,
           numberOfBallsPlayed: 1,
-          player_id: runTicket?.on_strike,
+          player_id: batsmanOnStrike,
+					...json
         },
       };
-			Axios.request({
-				url: "/api/batsmanRecordsBallByBall",
-				method: "post",
-				data: batterJson,
-			}).catch(e=>{
-				console.log(e)
-			});
+			if (json?.player_id != -1) {
+        Axios.request({
+          url: "/api/batsmanRecordsBallByBall",
+          method: "post",
+          data: JSON.stringify(batterJson),
+        }).catch((e) => {
+          console.log(e);
+        });
+      }
+
 
 			let bolwerJson: bowler = {
         matchId: match_id,
         inningNumber: inning_number,
 				"playerId":  runTicket?.on_attack,
         bowlerList: {
-          runs: runsClicked,
+          runs: runsClicked ? runsClicked : 0,
           player_id: runTicket?.on_attack,
           ballNumber: ballNumber,
-          wickets: runTicket.is_out,
+          wickets: wicketSelecor.out_method ? wicketSelecor.out_method : -1,
 					overNumber:runTicket.over_number,
 					timeStamp: moment().format("hh:mm:ss")
         },
@@ -214,13 +249,17 @@ const Runs = () => {
       url: "/api/ballByBall",
       method: "post",
       data: json,
+    }).catch((e) => {
+      message.error("Something went wrong");
+      dispacth(setLoadingFalse());
     });
     if (fetchScoreApi.data) {
       dispacth(updateMatchScoreBallByBall(fetchScoreApi.data?.balls));
       fetchScoreBallByBall();
     }
 
-		dispacth(emptyExtras())
+		dispacth(emptyExtras());
+		dispacth(setLoadingFalse());
 		await Promise.all([dispacth(emptyExtras())]).then(e=> {
 			message.success("Run Saved");
 			message.destroy();
@@ -234,6 +273,14 @@ const Runs = () => {
       dispacth(resetOutMethod());
     }
 
+  };
+
+	const isSaveEnabled = () => {
+		let {on_strike=-1,non_strike=-1,on_attack=-1} = runTicket;
+		console.log(JSON.stringify(runTicket),"GET ACTIVE PACE-practival")
+		if (on_strike > 0 && non_strike > 0 && Number(on_attack) > 0) {
+			setSaveButtonEnabled(true);
+    }
   };
   const handleWheel = (e: any) => {
     e.preventDefault();
@@ -340,12 +387,12 @@ const Runs = () => {
           ""
         )}
 
-        <Button
+        {isSaveButtonEnabled && <Button
           onClick={() => submitBallByBall()}
           className={`flex-1 ${"bg-green-600"} text-white  text-center items-center p-10 text-xl font-extrabold uppercase`}
         >
           Save
-        </Button>
+        </Button>}
 				<Wicket />
       </div>
     </div>

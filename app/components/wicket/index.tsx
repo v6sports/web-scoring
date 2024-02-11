@@ -1,8 +1,8 @@
 import { Button, Modal, Tooltip } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Players from "../players";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
+import { AppDispatch, useAppSelector } from "@/redux/store";
 import { resetFielder, resetOutMethod, setOutMethod } from "@/redux/features/slices/inningsTrackSlice";
 
 const allWickets = [
@@ -101,6 +101,7 @@ const Wicket = () => {
   const [selectedWicketType, setSelectedWicketType] = useState(null);
   const [selectedButton, setSelectedButton] = useState(null);
 	const dispatch = useDispatch<AppDispatch>();
+	const wicketSelecter = useAppSelector((state) => state.inningsTrackSlice);
 
 	const handleButtonClick = (value) => {
     if (value == selectedWicketType) {
@@ -114,6 +115,11 @@ const Wicket = () => {
     setSelectedWicketType(value);
   };
 
+useEffect(() => {
+		if (wicketSelecter.out_method == null || wicketSelecter.out_method == -1) {
+			setSelectedWicketType(null);
+		}
+}, [wicketSelecter.out_method]);
   const showModal = () => {
     setIsModalOpen(true);
   };
