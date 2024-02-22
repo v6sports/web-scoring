@@ -26,9 +26,8 @@ export async function POST(req: Request) {
 		console.error('Error reading files:', err);
 	});
 	let data = await readFilesInFolder(folderForBatters);
-	const playerSumMap = {};
-	console.log(listOfPlayers,"LLL")
-	data?.flat().forEach((stat) => {
+	const playerSumMap:any = {};
+	data?.flat().forEach((stat:any) => {
 		const playerId = stat.player_id;
 
 		if (!playerSumMap[playerId]) {
@@ -38,9 +37,9 @@ export async function POST(req: Request) {
         runs: 0,
         numberOfBallsPlayed: 0,
         player_id: playerId,
-        playerName: listOfPlayers.find((player) => player.player_id == playerId)?.name || '',
-		bolwer: listOfPlayers.find((player) => player.player_id == stat?.on_attack)?.name,
-		fieldedBy: listOfPlayers.find((player) => player.player_id == stat?.assist_by)?.name,
+        playerName: listOfPlayers.find((player:any) => player.player_id == playerId)?.name || '',
+		bolwer: listOfPlayers.find((player:any) => player.player_id == stat?.on_attack)?.name,
+		fieldedBy: listOfPlayers.find((player:any) => player.player_id == stat?.assist_by)?.name,
       };
 		}
 

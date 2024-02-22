@@ -13,7 +13,7 @@ import { overBalls } from "@/app/Utils/overBalls.utils";
 import { strikeConfirm } from "@/app/Utils/playersUtils";
 
 export async function POST(req: Request) {
-  const ballScore: IballByBall = await req.json();
+  const ballScore: any = await req.json();
   const overJson: IcurrentOver = {};
   if (!ballScore.match_id) {
     return NextResponse.json({
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
     : [];
 
   // write OverLogic
-  let overBallbyBallData = overBalls(
+  let overBallbyBallData:any = overBalls(
     updatedScoreParsed,
     ballScore,
     ballScore?.inning_number

@@ -75,7 +75,7 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           pointerEvents: "none",
         }}
       >
-        <div className="flex flex-1 w-[20px] bg-black z-10   left-[70px] opacity-15  align-middle justify-center absolute border border-black border-1 h-[340px]"></div>
+        <div className="flex flex-1 w-[20px] bg-black z-10   left-[50px] opacity-15  align-middle justify-center absolute border border-black border-1 h-[350px]"></div>
         <div className="w-full h-10 bg-[#FFF5C1] items-end flex justify-end p-2 border border-black border-b-1 border-t-0 border-r-0 border-l-0">
           <p className="text-left text-xs font-light">Yorker (2M)</p>
         </div>

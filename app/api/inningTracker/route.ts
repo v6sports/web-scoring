@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     }
   }
 
-  let readInningTrackerFile: [] = await fsPromise.readFile(
+  let readInningTrackerFile: any = await fsPromise.readFile(
     fileForInningTracker,
     "utf-8"
   );
@@ -50,15 +50,7 @@ export async function POST(req: Request) {
   // New data will be not pushed if read Flag is False
   if (isRead === false) {
 
-		let readInningTrackerFile: Array<{
-			timeStamp: string;
-			batsman_player_id?: string | number;
-			bolwer_player_id?: string | number;
-			over_number?: string | number;
-			ball_number?: string | number;
-			// ... add other properties here
-			isRead?: boolean;
-		}> = await fsPromise.readFile(fileForInningTracker, "utf-8");
+		let readInningTrackerFile: any = await fsPromise.readFile(fileForInningTracker, "utf-8");
 		readInningTrackerFile = JSON.parse(readInningTrackerFile); // Remove this line
 
 		readInningTrackerFile.push({

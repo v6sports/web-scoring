@@ -8,7 +8,7 @@ export interface batter {
 
 export interface batsmanDetails {
   name?: string;
-  player_id:  string | number;
+  player_id:  string | number | undefined;
   user_id?:  string | number;
   boundariesInFour: number;
   boundariesInSix: number;

@@ -7,7 +7,7 @@ interface IwhichTeamPlayers {
   currentInnings: 1 | 2 | 3 | 4;
 }
 
-const getPlayers = (props: IwhichTeamPlayers) => {
+const getPlayers = (props: IwhichTeamPlayers,teamName='') => {
   const { key, matchData, currentInnings } = props;
 
   const currentInningsData = matchData.innings?.[currentInnings];
@@ -20,22 +20,24 @@ const getPlayers = (props: IwhichTeamPlayers) => {
 
   if (currentInnings === 1 || currentInnings === 3) {
     if (key === "batting") {
-
+			if(teamName)  return allPlayerListTeamA?.name
       return allPlayerListTeamA?.players;
     }
     if (key === "bowling") {
+			if(teamName)  return allPlayerListTeamB?.name
       return allPlayerListTeamB?.players;
     }
   }
   if (currentInnings === 2 || currentInnings === 4) {
     if (key === "batting") {
+			if(teamName)  return allPlayerListTeamB?.name
       return allPlayerListTeamB?.players;
     }
     if (key === "bowling") {
+			if(teamName)  return allPlayerListTeamA?.name
       return allPlayerListTeamA?.players;
     }
   }
-  console.log(currentInningsData, "currentInningsData");
 };
 
 /**
@@ -72,7 +74,7 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
     is_out,
     ball_number,
   } = ballByBall;
-  console.log(onStrikeBatsman, "SERVER SIDE");
+
   if (onStrikeBatsman == -1) {
     return {
       onStrikeBatsman: -1,
@@ -85,12 +87,6 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
       nonStrikeBatsman: -1,
     };
   }
-  console.log(
-    JSON.stringify(ballByBall),
-    "before____QWERTY",
-    ballByBall.runs,
-    ballByBall.is_out
-  );
   switch (true) {
     case ballByBall.extra_type == "wide" || ballByBall.extra_type == "no-ball":
       break;

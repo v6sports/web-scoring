@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 	let totalRuns = 0;
 	let totalWickets = 0;
 	let overs = 0;
-	let currentBall = 0;
+	let currentBall:any = 0;
 	const uniqueOverNumbers = new Set();
     // Iterate through each object in the array
     playersInfo.forEach((item: bowlerDetails) => {

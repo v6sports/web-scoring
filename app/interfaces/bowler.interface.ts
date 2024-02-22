@@ -7,7 +7,7 @@ export interface bowler {
 
 export interface bowlerDetails {
   name?: string;
-  player_id: string | number;
+  player_id: string | number | undefined;
   user_id?: string;
   wickets?: string | number;
   overNumber?: number;

@@ -2,7 +2,10 @@ import { IballByBall } from "@/app/interfaces/ballByBall.interface";
 import { batter } from "@/app/interfaces/batter.interface";
 import { bowler } from "@/app/interfaces/bowler.interface";
 import { IScoreBallByBall } from "@/app/interfaces/scoreBallByBall.interface";
-import { emptyExtras, updateMatchScoreBallByBall } from "@/redux/features/slices/ballByBallSlice";
+import {
+  emptyExtras,
+  updateMatchScoreBallByBall,
+} from "@/redux/features/slices/ballByBallSlice";
 import { setScoreBallByBall } from "@/redux/features/slices/scoreBallByBallSlice";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { Button, Input, InputNumber, message } from "antd";
@@ -11,17 +14,28 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Wicket from "../wicket";
-import { resetBatsman, resetBowler, resetOutMethod, setBallNumber, setBatsman, setBowler, setOverNumber } from "@/redux/features/slices/inningsTrackSlice";
-import { setLoadingFalse,setLodingTrue } from "@/redux/features/slices/scoreboardProgressSlice";
+import {
+  resetBatsman,
+  resetBowler,
+  resetOutMethod,
+  setBallNumber,
+  setBatsman,
+  setBowler,
+  setOverNumber,
+} from "@/redux/features/slices/inningsTrackSlice";
+import {
+  setLoadingFalse,
+  setLodingTrue,
+} from "@/redux/features/slices/scoreboardProgressSlice";
 
 const Runs = () => {
   const [selectedButton, setSelectedButton] = useState<string | number | null>(
     null
   );
-	const [isSaveButtonEnabled, setSaveButtonEnabled] = useState(false);
+  const [isSaveButtonEnabled, setSaveButtonEnabled] = useState(false);
   const dispacth = useDispatch<AppDispatch>();
-	const wicketSelecor = useAppSelector((state) => state.inningsTrackSlice);
-	const matchSaveStatus = useAppSelector((state) => state.matchSaveSlice);
+  const wicketSelecor = useAppSelector((state) => state.inningsTrackSlice);
+  const matchSaveStatus = useAppSelector((state) => state.matchSaveSlice);
   const scoreBallByBallData = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
@@ -36,7 +50,6 @@ const Runs = () => {
   };
 
   const fetchScoreBallByBall = async () => {
-
     let fetchScoreApi = await Axios.request({
       url: "/api/readScore",
       method: "post",
@@ -46,7 +59,6 @@ const Runs = () => {
       },
     });
     if (fetchScoreApi.data as IScoreBallByBall) {
-
       dispacth(setScoreBallByBall(fetchScoreApi.data));
       dispacth(
         updateMatchScoreBallByBall(
@@ -54,61 +66,63 @@ const Runs = () => {
         )
       );
     }
-		dispacth(emptyExtras())
+    dispacth(emptyExtras());
   };
   useEffect(() => {
     fetchScoreBallByBall();
-		isSaveEnabled();
+    isSaveEnabled();
   }, []);
 
-	useEffect(() => {
-		isSaveEnabled();
-	}, [JSON.stringify(runTicket)]);
+  useEffect(() => {
+    isSaveEnabled();
+  }, [JSON.stringify(runTicket)]);
   const submitBallByBall = async () => {
+    if (runTicket.on_attack === -1) {
+      message.destroy();
+      message.error("Please select a bowler");
+      return;
+    }
 
-		if(runTicket.on_attack === -1) {
-			message.destroy()
-				message.error("Please select a bowler");
-				return;
-		}
+    if (runTicket.on_strike === -1) {
+      message.destroy();
+      message.error("Please select a Striker");
+      return;
+    }
+    if (runTicket.non_strike === -1) {
+      message.destroy();
+      message.error("Please select a Non Striker");
+      return;
+    }
+    message.destroy();
+    message.loading("Please wait");
+    dispacth(setLodingTrue());
+    let _lastBall = scoreBallByBallData.fullScore?.lastBallOfOver;
+    const overNumber = runTicket.over_number || 0;
+    const batsmanOnStrike = runTicket.on_strike;
+    const ballNumber = _lastBall?.nextBallNumber || 1;
+    /** LOGIC FOR WICKET WRITING HERE ONLY FOR NOW START */
+    /**
+     * Wicket will only get saved if out_method is not -1
+     */
 
-		if(runTicket.on_strike === -1) {
-			message.destroy()
-				message.error("Please select a Striker");
-				return;
-		}
-		if(runTicket.non_strike === -1) {
-			message.destroy()
-				message.error("Please select a Non Striker");
-				return;
-		}
-		message.destroy();
-		message.loading("Please wait");
-		dispacth(setLodingTrue());
-		let _lastBall = scoreBallByBallData.fullScore?.lastBallOfOver;
-		const overNumber = runTicket.over_number;
-		const batsmanOnStrike = runTicket.on_strike
-		const ballNumber = _lastBall?.nextBallNumber || 1;
-		/** LOGIC FOR WICKET WRITING HERE ONLY FOR NOW START */
-		/**
-		 * Wicket will only get saved if out_method is not -1
-		 */
+    if (
+      runTicket.on_strike &&
+      runTicket.on_attack &&
+      overNumber > -1 &&
+      ballNumber &&
+      wicketSelecor.out_method != -1
+    ) {
+      message.destroy();
+      message.loading("Saving Wicket");
+      console.log(runTicket.on_strike, "GET ACTIVE PACE");
+      dispacth(setBatsman(runTicket.on_strike));
+      dispacth(setBowler(runTicket.on_attack));
+      dispacth(setOverNumber(overNumber?.toString() ?? ""));
+      dispacth(setBallNumber(ballNumber));
+    }
 
-		if(runTicket.on_strike && runTicket.on_attack && overNumber > -1  && ballNumber && wicketSelecor.out_method != -1)
-		{
-
-			message.destroy();
-			message.loading("Saving Wicket");
-			console.log(runTicket.on_strike,"GET ACTIVE PACE")
-				dispacth(setBatsman(runTicket.on_strike));
-				dispacth(setBowler(runTicket.on_attack));
-				dispacth(setOverNumber(overNumber));
-				dispacth(setBallNumber(ballNumber));
-
-		}
-
-		/** LOGIC FOR WICKET WRITING HERE ONLY FOR NOW END */
-    let runsClicked = 0;
+    /** LOGIC FOR WICKET WRITING HERE ONLY FOR NOW END */
+    let runsClicked: any = 0;
     let isBoundry = 0;
     if (selectedButton == "44") {
       runsClicked = 4;
@@ -121,20 +135,20 @@ const Runs = () => {
       isBoundry = 0;
     }
 
-		let {
-      batsman_player_id = '',
-      bolwer_player_id = '',
-      out_method = '',
+    let {
+      batsman_player_id = "",
+      bolwer_player_id = "",
+      out_method = "",
       fielder_player_id = 0,
-			inning_number,
-			match_id
+      inning_number,
+      match_id,
     } = wicketSelecor;
-		if (out_method == -1) {
+    if (out_method == -1) {
       batsman_player_id = -1;
     }
-		console.log(runTicket);
+    console.log(runTicket);
 
-		let json: IballByBall = {
+    let json: any = {
       localId: 0,
       over: overNumber,
       over_number: overNumber || 0,
@@ -144,19 +158,21 @@ const Runs = () => {
       extra_type: runTicket?.extra_type || "",
       nextBallNumber: ballNumber,
       extras: runTicket.extras,
-      is_out: out_method ,
+      is_out: out_method.toString(),
       out_by: 0,
       user_id: "123",
       who_out: 0,
       boundary: isBoundry,
-      match_id: match_id,
-      assist_by: fielder_player_id,
+      match_id: match_id.toString(),
+      assist_by: fielder_player_id.toString(),
       on_attack: runTicket?.on_attack,
-      on_strike: runTicket?.on_strike == batsman_player_id ? -1 : runTicket?.on_strike,
+      on_strike:
+        runTicket?.on_strike == batsman_player_id ? -1 : runTicket?.on_strike,
       team_runs: 1,
-      non_attack: runTicket?.non_attack ,
-      non_strike: runTicket?.non_strike == batsman_player_id ? -1 : runTicket?.non_strike,
-      wicket_type: out_method,
+      non_attack: runTicket?.non_attack,
+      non_strike:
+        runTicket?.non_strike == batsman_player_id ? -1 : runTicket?.non_strike,
+      wicket_type: out_method.toString(),
       next_batsman: 0,
       scoring_area: 0,
       inning_number: inning_number,
@@ -171,32 +187,32 @@ const Runs = () => {
       },
     };
 
-
-		/**
-		 * SAVE WICKET IT ANY
-		 */
-		if (wicketSelecor.out_method != 1) {
+    /**
+     * SAVE WICKET IT ANY
+     */
+    if (wicketSelecor.out_method != 1) {
       Axios.request({
         url: "/api/inningTracker",
         data: wicketSelecor,
         method: "post",
-      }).then(() => {
-
-        // dispacth(resetBatsman());
-        // dispacth(resetBowler());
-        // dispacth(resetOutMethod());
-      }).catch(e=>{
-				message.error("Something went wrong");
-				dispacth(setLoadingFalse());
-			});
+      })
+        .then(() => {
+          // dispacth(resetBatsman());
+          // dispacth(resetBowler());
+          // dispacth(resetOutMethod());
+        })
+        .catch((e) => {
+          message.error("Something went wrong");
+          dispacth(setLoadingFalse());
+        });
     }
 
-		/**
-		 * SAVE WICKET AND
-		 */
+    /**
+     * SAVE WICKET AND
+     */
 
-		if (true) {
-			runTicket = json;
+    if (true) {
+      runTicket = json;
       let batterJson: batter = {
         matchId: match_id,
         inningNumber: inning_number,
@@ -206,10 +222,10 @@ const Runs = () => {
           runs: runsClicked ? runsClicked : 0,
           numberOfBallsPlayed: 1,
           player_id: batsmanOnStrike,
-					...json
+          ...json,
         },
       };
-			if (json?.player_id != -1) {
+      if (json?.player_id != -1) {
         Axios.request({
           url: "/api/batsmanRecordsBallByBall",
           method: "post",
@@ -219,31 +235,28 @@ const Runs = () => {
         });
       }
 
-
-			let bolwerJson: bowler = {
+      let bolwerJson: bowler = {
         matchId: match_id,
         inningNumber: inning_number,
-				"playerId":  runTicket?.on_attack,
+        playerId: runTicket?.on_attack,
         bowlerList: {
           runs: runsClicked ? runsClicked : 0,
           player_id: runTicket?.on_attack,
           ballNumber: ballNumber,
           wickets: wicketSelecor.out_method ? wicketSelecor.out_method : -1,
-					overNumber:runTicket.over_number,
-					timeStamp: moment().format("hh:mm:ss")
+          overNumber: runTicket.over_number,
+          timeStamp: moment().format("hh:mm:ss"),
         },
       };
 
-			await Axios.request({
-				url: "/api/bowlerRecordsBallByBall",
-				method: "post",
-				data: bolwerJson,
-			}).catch(e=>{
-				console.log(e)
-			});
+      await Axios.request({
+        url: "/api/bowlerRecordsBallByBall",
+        method: "post",
+        data: bolwerJson,
+      }).catch((e) => {
+        console.log(e);
+      });
     }
-
-
 
     let fetchScoreApi = await Axios.request({
       url: "/api/ballByBall",
@@ -253,33 +266,34 @@ const Runs = () => {
       message.error("Something went wrong");
       dispacth(setLoadingFalse());
     });
-    if (fetchScoreApi.data) {
+    if (fetchScoreApi?.data) {
       dispacth(updateMatchScoreBallByBall(fetchScoreApi.data?.balls));
       fetchScoreBallByBall();
     }
 
-		dispacth(emptyExtras());
-		dispacth(setLoadingFalse());
-		await Promise.all([dispacth(emptyExtras())]).then(e=> {
-			message.success("Run Saved");
-			message.destroy();
-		}).catch(e=>{
-			console.log(e,"Something went wrong");
-		})
+    dispacth(emptyExtras());
+    dispacth(setLoadingFalse());
+    await Promise.all([dispacth(emptyExtras())])
+      .then((e) => {
+        message.success("Run Saved");
+        message.destroy();
+      })
+      .catch((e) => {
+        console.log(e, "Something went wrong");
+      });
 
-		if (wicketSelecor.out_method != -1) {
+    if (wicketSelecor.out_method != -1) {
       dispacth(resetBatsman());
       dispacth(resetBowler());
       dispacth(resetOutMethod());
     }
-
   };
 
-	const isSaveEnabled = () => {
-		let {on_strike=-1,non_strike=-1,on_attack=-1} = runTicket;
-		console.log(JSON.stringify(runTicket),"GET ACTIVE PACE-practival")
-		if (on_strike > 0 && non_strike > 0 && Number(on_attack) > 0) {
-			setSaveButtonEnabled(true);
+  const isSaveEnabled = () => {
+    let { on_strike = -1, non_strike = -1, on_attack = -1 } = runTicket;
+    console.log(JSON.stringify(runTicket), "GET ACTIVE PACE-practival");
+    if (on_strike > 0 && non_strike > 0 && Number(on_attack) > 0) {
+      setSaveButtonEnabled(true);
     }
   };
   const handleWheel = (e: any) => {
@@ -350,9 +364,7 @@ const Runs = () => {
           </div>
         </div>
       </Button.Group>
-      <div className="flex flex-1">
-
-      </div>
+      <div className="flex flex-1"></div>
       <div className="flex flex-row gap-4 mt-2">
         <Button
           key={"Value-44"}
@@ -387,13 +399,15 @@ const Runs = () => {
           ""
         )}
 
-        {isSaveButtonEnabled && <Button
-          onClick={() => submitBallByBall()}
-          className={`flex-1 ${"bg-green-600"} text-white  text-center items-center p-10 text-xl font-extrabold uppercase`}
-        >
-          Save
-        </Button>}
-				<Wicket />
+        {isSaveButtonEnabled && (
+          <Button
+            onClick={() => submitBallByBall()}
+            className={`flex-1 ${"bg-green-600"} text-white  text-center items-center p-10 text-xl font-extrabold uppercase`}
+          >
+            Save
+          </Button>
+        )}
+        <Wicket />
       </div>
     </div>
   );

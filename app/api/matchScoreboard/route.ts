@@ -14,6 +14,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const matchId = searchParams.get("matchId");
 	const inningNumber =  searchParams.get('inning')
+	console.log("APPLE IS GREEN",inningNumber)
   if (!matchId) {
     return NextResponse.json({
       status: false,
@@ -44,7 +45,7 @@ export async function GET(req: Request) {
   let getUpdatedFileName = `${folderName}/matchScoreboardUpdated.json`; // update by localResponse As Well
 
 	try {
-		let savedData =await readFileSync(getUpdatedFileName,'utf-8');
+		let savedData =await readFileSync(currentInningPath,'utf-8');
 		if(savedData){
 			return NextResponse.json(JSON.parse(savedData));
 		}
@@ -61,6 +62,7 @@ export async function GET(req: Request) {
     .catch((error) => console.log("error", error));
 
   try {
+		console.log(folderName,"FOLDER NAME")
     await fsPromises.mkdir(folderName);
   } catch (error) {
     console.log("MATCH ALREADY EXISITS");
@@ -88,7 +90,7 @@ try {
 		});;
 	}
 } catch (error) {
-console.log('%croute.ts line:79 error', 'color: #007acc;', error);
+console.log('EROOR', error);
 }
 
   if (data) {

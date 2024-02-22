@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const playerStatsArray: any[] = [];
 
 // Process each player's scorecard
-data.forEach((playerScorecard) => {
+data.forEach((playerScorecard:any) => {
   const playerStats: { [key: string]: any } = {
     player_id: '',
     total_runs: 0,
@@ -26,7 +26,7 @@ data.forEach((playerScorecard) => {
   };
 
   // Process each ball in the player's scorecard
-  playerScorecard?.length > 0 && playerScorecard.forEach((ball) => {
+  playerScorecard?.length > 0 && playerScorecard.forEach((ball:any) => {
     const { player_id, runs, wickets, overNumber, ballNumber } = ball;
 
     // Initialize player's stats if not already present

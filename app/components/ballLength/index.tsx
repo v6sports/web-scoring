@@ -21,8 +21,6 @@ const bowlingStylesFast = [
   { value: "fullToss", label: "Full toss", bowlerType: "fast" },
   { value: "beamer", label: "Beamer", bowlerType: "fast" },
 
-
-
   // spinners
   { value: "offSpin", label: "Off-spin", bowlerType: "spinner" },
   { value: "legSpin", label: "Leg-spin", bowlerType: "spinner" },
@@ -37,19 +35,27 @@ const bowlingStylesFast = [
   // Add more types as needed
 ];
 
-const bowlingTypesButtons = (types: [], bolwerType = "") => {
-  return (
+const bowlingTypesButtons = (types: { value: string, label: string, bowlerType: string }[], bolwerType = "") => {
+	return (
 		<div className="flex flex-col w-full">
-    <Radio.Group
-      options={types.filter((types) => types.bowlerType == bolwerType)}
-      className="grid grid-cols-3 sm:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 md:grid-cols-2 mt-0 p-2 w-full"
-      optionType="button"
-      size="large"
-      buttonStyle={"solid"}
-    />
+			<Radio.Group
+				options={types.filter((types) => types.bowlerType === bolwerType)}
+				className="grid grid-cols-3 sm:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 md:grid-cols-2 mt-0 p-2 w-full"
+				optionType="button"
+				size="large"
+				buttonStyle={"solid"}
+			/>
 		</div>
-  );
+	);
 };
+
+// {
+// 	'1' => 'Full length delivery',
+// 	'2' => 'Yorker length delivery',
+// 	'3' => 'Full toss delivery',
+// 	'4' => 'Pitched on good length area',
+// 	'5' => 'A shorter length delivery'
+// }
 
 const items: TabsProps["items"] = [
   {
@@ -61,7 +67,7 @@ const items: TabsProps["items"] = [
     key: "spin",
     label: "Spin",
     children: bowlingTypesButtons(bowlingStylesFast, "spinner"),
-  }
+  },
 ];
 
 const onChange = (key: string) => {
@@ -70,16 +76,16 @@ const onChange = (key: string) => {
 
 const BallLength = () => {
   return (
-		<div className="flex flex-col w-full">
-    <Tabs
-      type="card"
-      size="middle"
-      animated={true}
-      defaultActiveKey="2"
-      items={items}
-      onChange={onChange}
-    />
-		</div>
+    <div className="flex flex-col w-full">
+      <Tabs
+        type="card"
+        size="middle"
+        animated={true}
+        defaultActiveKey="2"
+        items={items}
+        onChange={onChange}
+      />
+    </div>
   );
 };
 

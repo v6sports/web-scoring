@@ -36,21 +36,21 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
   );
 
 	let inningNumber = 0;
-	inningNumber =  searchParams.get('inning')
+	inningNumber =  Number(searchParams.get('inning'))
 
-  const getMatchInfo = async () => {
-    setLoading(true);
-    const fetchMatchById = await Axios({
-      url: `/api/matchScoreboard?matchId=${params.slug}&inning=${inningNumber}`,
-    }).catch((e) => {
-      showAlert("Something Went wrong", "error");
-      setLoading(false);
-    });
-    setLoading(false);
+	const getMatchInfo = async () => {
+		setLoading(true);
+		const fetchMatchById = await Axios({
+			url: `/api/matchScoreboard?matchId=${params.slug}&inning=${inningNumber}`,
+		}).catch((e) => {
+			showAlert("Something Went wrong", "error");
+			setLoading(false);
+		});
+		setLoading(false);
 		dispatch(setMatchId(params.slug))
-		dispatch(setInningNumber(parseInt(inningNumber))); // TODO - change Inning number to something else
-    dispatch(getMatchScoreboardInformation(fetchMatchById.data));
-  };
+		dispatch(setInningNumber(inningNumber.toString())); // TODO - change Inning number to something else
+		dispatch(getMatchScoreboardInformation(fetchMatchById?.data));
+	};
   useEffect(() => {
     getMatchInfo();
   }, []);
@@ -103,7 +103,7 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
                   <div className="flex flex-col">
                     <div className="flex flex-col gap-4">
                       <div>
-                        <WagonWheel />
+                        <WagonWheel height={50} width={50} />
                         <PitchMap />
                       </div>
 
@@ -133,7 +133,7 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
               </div>
               <div className="flex flex-col  gap-1 ">
                 <LiveScore />
-                <Extras />
+                {/* <Extras /> */}
                 <CurrentOver />
                 <PreviousOver />
                 <Runs />

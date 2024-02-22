@@ -1,18 +1,50 @@
-import { inningsRunRate } from "@/app/Utils/utils";
+import getPlayers from "@/app/Utils/playersUtils";
+import { fetchScoreApi, inningsRunRate } from "@/app/Utils/utils";
 import { useAppSelector } from "@/redux/store";
 import { Collapse } from "antd";
 import React, { useEffect } from "react";
+import Extras from "../extras";
 
 const LiveScore = () => {
+	const selector = useAppSelector((state) => state.matchSliceReducer);
+
+	const [battingTeamNameInInnings, setBattingTeamNameInInnings] =
+    React.useState<any>([]);
+	const inningSelector = useAppSelector((state) => state.inningsTrackSlice);
   const scoreBallByBallData = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
+	const init = async () => {
+		const inningNumber = inningSelector.inning_number || 0;
+		let maxNumberOfInning = Number(inningNumber);
+		const arrayForTeam = [];
+		for (let i = 0; i <= maxNumberOfInning; i++) {
+      if (i <= maxNumberOfInning && i > 0) {
+        let teamName = getPlayers(
+          {
+            currentInnings: Number(i + 1),
+            key: "batting",
+            matchData: selector,
+          },
+          "tes"
+        );
+        let teamScore = await fetchScoreApi(selector.match_id, i.toString());
+        console.log(teamScore?.data, "teamScore");
+        arrayForTeam.push({
+          teamName,
+          inningNumber: i,
+          scoreBoard: teamScore?.data || [],
+        });
+      }
+    }
+	setBattingTeamNameInInnings(arrayForTeam);
+	console.log(arrayForTeam,"arrayForTeam")
+}
   useEffect(() => {
-    // This function will be called whenever scoreBallByBallData changes
-    // You can perform any update logic here
-
-  }, [scoreBallByBallData]);
+	init()
+  }, []);
 	const fullScoreBoard = scoreBallByBallData.fullScore;
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-row items-center gap-2">
@@ -32,27 +64,39 @@ const LiveScore = () => {
         </code>
       </div>
       <Collapse>
+        {console.log(battingTeamNameInInnings, "battingTeamNameInInnings	")}
         <Collapse.Panel header="Scores" key="1" className="bg-green-200">
-          <div className="flex flex-row items-center gap-2">
-            <code className="text-xs font-extrabold">IND</code>
-            <code className="text-xs font-extrabold">10/1</code>
-            <code className="text-xs font-light">Ov. 134</code>
-            <code className="text-xs font-extrabold">(INN-1 )</code>
-          </div>
-          <div className="flex flex-row items-center gap-2">
-            <code className="text-xs font-extrabold">PAK</code>
-            <code className="text-xs font-extrabold">10/1</code>
-            <code className="text-xs font-light">Ov. 134</code>
-            <code className="text-xs font-extrabold">(INN-2 )</code>
-          </div>
-          <div className="flex flex-row items-center gap-2">
-            <code className="text-xs font-extrabold">PAK</code>
-            <code className="text-xs font-extrabold">10/1</code>
-            <code className="text-xs font-light">Ov. 134</code>
-            <code className="text-xs font-extrabold">(INN-3 )</code>
-          </div>
+          {battingTeamNameInInnings?.length > 0 &&
+            battingTeamNameInInnings?.map((e) => {
+              let scoreboardFull = e?.scoreBoard?.fullScore;
+              return (
+                <div className="flex flex-row items-center gap-2">
+                  <code className="text-xs font-extrabold">
+                    {e.teamName || ""}
+                  </code>
+                  <code className="text-xs font-extrabold">
+                    {scoreboardFull?.totalRuns || 0}/
+                    {scoreboardFull?.wickets.length || 0}
+                  </code>
+                  <code className="text-xs font-light">
+                    Ov. {scoreboardFull?.totalOvers || "0.0"}
+                  </code>
+                  <code className="text-xs font-extrabold">
+                    (INN-{e?.inningNumber || ""} )
+                  </code>
+                </div>
+              );
+            })}
         </Collapse.Panel>
       </Collapse>
+      <div className="mt-4">
+        <Extras
+          extrasFromScore={
+            battingTeamNameInInnings[battingTeamNameInInnings.length - 1]
+              ?.scoreBoard?.fullScore?.extraRuns
+          }
+        />
+      </div>
     </div>
   );
 };

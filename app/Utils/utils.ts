@@ -1,4 +1,5 @@
 import { message } from "antd";
+import  Axios  from "axios";
 
 const showAlert = (
   msg: string,
@@ -27,6 +28,18 @@ const checkNullfy = (data: string | number) => {
   else return true;
 };
 
+let fetchScoreApi = async (matchId: string, inning_number: string) => {
+  if (matchId && inning_number) {
+    return await Axios.request({
+      url: "/api/readScore",
+      method: "post",
+      data: {
+        match_id: matchId,
+        inning_number: inning_number,
+      },
+    });
+  } else return false;
+};
 const calculateStrikeRate = (runs: number, ball: number) => {
   let strikeRate = (runs / ball) * 100;
   if (strikeRate) return strikeRate.toFixed(1);
@@ -38,4 +51,10 @@ const inningsRunRate = (runs: number, balls: number) => {
   let rr = (runs / balls) * 6;
   return rr ? rr.toFixed(2) : 0;
 };
-export { showAlert, checkNullfy, calculateStrikeRate, inningsRunRate };
+export {
+  showAlert,
+  checkNullfy,
+  calculateStrikeRate,
+  inningsRunRate,
+  fetchScoreApi,
+};
