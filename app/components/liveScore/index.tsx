@@ -26,7 +26,7 @@ const LiveScore = () => {
             key: "batting",
             matchData: selector,
           },
-
+					"Name"
         );
         let teamScore:any = await fetchScoreApi(selector.match_id, i.toString());
         console.log(teamScore?.data, "teamScore");
@@ -48,9 +48,10 @@ const LiveScore = () => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-row items-center gap-2">
-        <code className="text-lg font-light">IND</code>
+
+        <code className="text-lg font-light">{battingTeamNameInInnings[Number(inningSelector.inning_number) -1 ]?.teamName}</code>
         <code className="text-lg font-extrabold">
-          {fullScoreBoard?.totalRuns} / {fullScoreBoard?.wickets?.length}
+          {fullScoreBoard?.totalRuns}/{fullScoreBoard?.wickets?.length}
         </code>
         <code className="text-lg font-light">
           ( {fullScoreBoard?.totalOvers})
@@ -71,8 +72,9 @@ const LiveScore = () => {
               let scoreboardFull = e?.scoreBoard?.fullScore;
               return (
                 <div className="flex flex-row items-center gap-2">
+
                   <code className="text-xs font-extrabold">
-                    {e.teamName || ""}
+                    {e.teamName ||  ""}
                   </code>
                   <code className="text-xs font-extrabold">
                     {scoreboardFull?.totalRuns || 0}/

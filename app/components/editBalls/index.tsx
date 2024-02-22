@@ -2,16 +2,19 @@ import { Table, Tooltip } from "antd";
 import Axios from "axios";
 import React, { useEffect, useState } from "react";
 interface iProps {
-	refetchParent:()=>void
+	refetchParent:()=>void,
+	matchId:string|number,
+	currentInning:string|number
 }
 const EditBalls:React.FC<iProps> = (props) => {
-	let { refetchParent } = props;
+	let { refetchParent,matchId,currentInning } = props;
   const [data, setData] = useState([]);
   const fetchDataFromAPI = async () => {
     try {
+
       const response = await Axios.post("/api/readScore", {
-        match_id: 100003,
-        inning_number: "1",
+        match_id: matchId,
+        inning_number:currentInning,
       });
       setData(response.data?.fullScore?.currentOver);
     } catch (error) {

@@ -7,7 +7,7 @@ interface IwhichTeamPlayers {
   currentInnings: Number;
 }
 
-const getPlayers = (props: IwhichTeamPlayers,teamName=null) => {
+const getPlayers = (props: IwhichTeamPlayers,teamName:any=null) => {
   const { key, matchData, currentInnings } = props;
 	//@ts-ignore
   const currentInningsData = matchData.innings?.[currentInnings];

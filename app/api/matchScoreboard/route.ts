@@ -54,7 +54,7 @@ export async function GET(req: Request) {
 	}
 
 	let data = await fetch(
-    `http://127.0.0.1/api/v1/fullscoreboard?match_id=${matchId}`,
+    `https://hpca.v6world.com/api/v1/fullscoreboard?match_id=${matchId}`,
     requestOptions
   )
     .then((response) => response.text())

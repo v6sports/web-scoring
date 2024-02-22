@@ -45,7 +45,8 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
   };
   let inningNumber = 0;
   inningNumber = Number(searchParams.get("inning"));
-
+	let matchId:any = 0
+	 matchId = params.slug;
   const selectInning = async (selectedInning:any) => {
     window.location.href = `/scoreboard/${params.slug}?inning=${selectedInning}`;
   };
@@ -167,7 +168,7 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
                 <Runs />
               </div>
               <div className="flex flex-col  w-fit ">
-                <EditBalls refetchParent={refetchParent} />
+                <EditBalls refetchParent={refetchParent} matchId={matchId} currentInning={inningNumber} />
               </div>
             </div>
           </React.Suspense>
