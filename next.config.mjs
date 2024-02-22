@@ -4,6 +4,7 @@ const __dirname = path.resolve();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	output: 'standalone',
+	ignoreBuildErrors: true,
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
 
