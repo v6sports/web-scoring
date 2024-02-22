@@ -187,6 +187,7 @@ const Runs = () => {
         ballNumber: 1,
         isOverEnd: false,
       },
+      videourl: selfRecordBall,
     };
 
     /**
