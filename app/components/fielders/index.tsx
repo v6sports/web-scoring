@@ -29,7 +29,7 @@ const Fielders = () => {
   useEffect(() => {
     const inningNumber = selector?.inning_number || 0;
     if (inningNumber > 0) {
-      const battingTeam = getPlayers({
+      const battingTeam:any = getPlayers({
         //@ts-ignore
         currentInnings: inningNumber,
         key: "bowling",

@@ -1,9 +1,9 @@
 import { IballByBall } from "@/app/interfaces/ballByBall.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: IballByBall = {
+const initialState: any = {
   assist_by: -1,
-} as IballByBall;
+};
 export const ballByBallSlice = createSlice({
   name: "match",
   initialState,

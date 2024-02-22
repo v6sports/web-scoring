@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
   try {
     let playersInfo:any = await fsPromise.readFile(
-      `${folderForBatters}/${playerId}`,
+      `${folderForBatters}/${playerId}.json`,
       "utf-8"
     ).catch(e=>{
 			return NextResponse.json({

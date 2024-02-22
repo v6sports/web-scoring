@@ -2,7 +2,7 @@
 import React from "react";
 import { Button, DatePicker, Form, Input, Select } from "antd";
 import { RangePickerProps } from "antd/es/date-picker";
-import { getMatch } from "@/redux/features/slices/matchSlice";
+// import { getMatch } from "@/redux/features/slices/matchSlice";
 import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
@@ -21,8 +21,8 @@ const CreateMatch = () => {
     console.log(day);
   };
   const triggerCreateMatch = (values:any) => {
-		dispatch(getMatch('Apple'))
-    console.log(selector);
+		// dispatch(getMatch('Apple'))
+    // console.log(selector);
   };
   return (
     <div className="flex items-center justify-center h-screen bg-white">

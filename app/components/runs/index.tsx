@@ -33,6 +33,8 @@ const Runs = () => {
     null
   );
   const [isSaveButtonEnabled, setSaveButtonEnabled] = useState(false);
+	const [disableSelfRecord, setDisableSelfRecord] = useState(false);
+	const [selfRecordBall, setSelfRecordBall] = useState('');
   const dispacth = useDispatch<AppDispatch>();
   const wicketSelecor = useAppSelector((state) => state.inningsTrackSlice);
   const matchSaveStatus = useAppSelector((state) => state.matchSaveSlice);
@@ -300,6 +302,32 @@ const Runs = () => {
     e.preventDefault();
   };
 
+	const recordBall = () => {
+		const localIP = "http://192.168.1.100";
+		const batsmanOnStrike = runTicket.on_strike;
+		const matchID = wicketSelecor.match_id;
+		const inningNumber = wicketSelecor.inning_number;
+		const ballNumber = scoreBallByBallData.fullScore?.lastBallOfOver?.nextBallNumber;
+		const overNumber = scoreBallByBallData.fullScore?.currentOver?.length;
+		const currentTime = moment().format('hh:mm:ss');
+		const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}-${inningNumber}-${batsmanOnStrike}-${overNumber}-${ballNumber}-${currentTime}`;
+		setSelfRecordBall(recordBallUrl);
+		message.success("Ball Recorded");
+		Axios.request({
+      method: "post",
+      baseURL: `http://${localIP}:3000`,
+      url: recordBallUrl,
+    }).catch((e) => {
+      console.log(e, "ERROR");
+    });
+		setDisableSelfRecord(true);
+		setTimeout(() => {
+			setDisableSelfRecord(false);
+		}, 2000);
+
+
+	}
+
   return (
     <div>
       <Button.Group key={"ButtonGroup"}>
@@ -409,6 +437,9 @@ const Runs = () => {
         )}
         <Wicket />
       </div>
+			<div className="flex flex-row gap-4 mt-4">
+			<Button onClick={recordBall} disabled={disableSelfRecord}  className="bg-red-900 text-white" block> Record Ball</Button>
+			</div>
     </div>
   );
 };

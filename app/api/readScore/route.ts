@@ -18,15 +18,15 @@ export async function POST(req: Request) {
     });
   });
 
-  const readMatchCompleteData: [] = await fsPrmoise
+  const readMatchCompleteData: any = await fsPrmoise
     .readdir(matchPath, "utf-8")
     .catch((e) => {
       console.log("Over Not Present");
     });
-		console.log(readMatchCompleteData,"MATCH")
+		console.log(readMatchCompleteData,"MATCH");
 	// return	NextResponse.json(readMatchCompleteData)
   let matchSocre = readMatchCompleteData.filter(
-    (e) => ballScore.inning_number == e
+    (e:any) => ballScore.inning_number == e
   );
 
 	console.log(matchSocre);
@@ -37,11 +37,13 @@ export async function POST(req: Request) {
   );
 
   // Getting last twoOver START
-  let currentOver = [];
-  let lastOver = [];
+  let currentOver:any = [];
+  let lastOver:any = [];
   try {
     const sortedFileNames = readAllOverbyOver?.sort((a, b) => {
+			//@ts-ignore
       const numberA = parseInt(a.match(/\d+/)?.[0], 10) || 0;
+				//@ts-ignore
       const numberB = parseInt(b.match(/\d+/)?.[0], 10) || 0;
       return numberA - numberB;
     });
@@ -49,6 +51,7 @@ export async function POST(req: Request) {
     lastTwoBiggestValues = lastTwoBiggestValues.reverse();
 
     try {
+				//@ts-ignore
       currentOver = await fsPrmoise.readFile(
         `${matchPath}/${matchSocre[0]}/over/${lastTwoBiggestValues[0]}`,
         "utf-8"
@@ -71,7 +74,7 @@ export async function POST(req: Request) {
   }
   // Getting last twoOver END
 
-  let readAllOversData: [] = await fsPrmoise.readFile(
+  let readAllOversData: any = await fsPrmoise.readFile(
     `${matchPath}/${matchSocre[0]}/ballByBall.json`,
     "utf-8"
   );
@@ -89,7 +92,7 @@ export async function POST(req: Request) {
 
     const oversData = readAllOversData;
 
-    oversData.forEach((over) => {
+    oversData.forEach((over:any) => {
 
 			if (!over.extra_type) {
         totalRuns += over.runs;
@@ -147,10 +150,10 @@ export async function POST(req: Request) {
 
 	try {
 
-		await fsPrmoise.readFile(inningsTracker,"utf-8").then((data:IinningTracker) => {
+		await fsPrmoise.readFile(inningsTracker,"utf-8").then((data:any) => {
 			data = JSON.parse(data);
 
-			data.forEach((e) => {
+			data.forEach((e:any) => {
 				if (e?.out_method != -1) {
 					wickets.push(e);
 				}

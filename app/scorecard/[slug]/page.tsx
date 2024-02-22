@@ -24,7 +24,7 @@ const scorecard = ({ params }: { params: { slug: string } }) => {
   }, []);
   const [batsmanStats, setBatsmanStats] = useState([]);
   const [fullMatchScoreCard, setFullMatchScoreCard] = useState({});
-	const [matchDetailsInfo, setMatchDetailsInfo] = useState({});
+	const [matchDetailsInfo, setMatchDetailsInfo] = useState<any>({});
 
   const fetchBatsmanStats = async () => {
 

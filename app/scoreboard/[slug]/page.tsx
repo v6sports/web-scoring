@@ -4,12 +4,12 @@ import { Provider, useDispatch } from "react-redux";
 import { AppDispatch, store, useAppSelector } from "@/redux/store";
 import Bolwer from "@/app/components/bowler";
 import PitchMap from "@/app/components/pitchmap";
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams } from "next/navigation";
 import WagonWheel from "@/app/components/wagonWheel";
 import BallLength from "@/app/components/ballLength";
 import BatterShots from "@/app/components/shorts";
 import Fielders from "@/app/components/fielders";
-import { Radio, message } from "antd";
+import { Radio, Select, message } from "antd";
 import Runs from "@/app/components/runs";
 import LiveScore from "@/app/components/liveScore";
 import CurrentOver from "@/app/components/currentOver";
@@ -20,46 +20,61 @@ import Batsman from "@/app/components/batsman";
 import Axios from "axios";
 import { getMatchScoreboardInformation } from "@/redux/features/slices/matchSlice";
 import { showAlert } from "@/app/Utils/utils";
-import { setInningNumber, setMatchId } from "@/redux/features/slices/inningsTrackSlice";
+import {
+  setInningNumber,
+  setMatchId,
+} from "@/redux/features/slices/inningsTrackSlice";
 import Loading from "@/app/components/loading";
+import EditBalls from "@/app/components/editBalls";
 
 const Scorebard = ({ params }: { params: { slug: string } }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const selector = useAppSelector((state) => state.matchSliceReducer);
-	const inningSelector = useAppSelector((state) => state.inningsTrackSlice);
-	const loadingSelector = useAppSelector((state) => state.loadingSlice);
-	const searchParams = useSearchParams()
+  const inningSelector = useAppSelector((state) => state.inningsTrackSlice);
+  const loadingSelector = useAppSelector((state) => state.loadingSlice);
+  const searchParams = useSearchParams();
+  const [reFetch, setReFetch] = useState(false);
 
-	const scoreBallByBallData = useAppSelector(
+  const scoreBallByBallData = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
 
-	let inningNumber = 0;
-	inningNumber =  Number(searchParams.get('inning'))
+  const refetchParent = () => {
+    setReFetch(true);
+  };
+  let inningNumber = 0;
+  inningNumber = Number(searchParams.get("inning"));
 
-	const getMatchInfo = async () => {
-		setLoading(true);
-		const fetchMatchById = await Axios({
-			url: `/api/matchScoreboard?matchId=${params.slug}&inning=${inningNumber}`,
-		}).catch((e) => {
-			showAlert("Something Went wrong", "error");
-			setLoading(false);
-		});
-		setLoading(false);
-		dispatch(setMatchId(params.slug))
-		dispatch(setInningNumber(inningNumber.toString())); // TODO - change Inning number to something else
-		dispatch(getMatchScoreboardInformation(fetchMatchById?.data));
-	};
+  const selectInning = async (selectedInning:any) => {
+    window.location.href = `/scoreboard/${params.slug}?inning=${selectedInning}`;
+  };
+  const getMatchInfo = async () => {
+    setLoading(true);
+    const fetchMatchById = await Axios({
+      url: `/api/matchScoreboard?matchId=${params.slug}&inning=${inningNumber}`,
+    }).catch((e) => {
+      showAlert("Something Went wrong", "error");
+      setLoading(false);
+    });
+    setLoading(false);
+    dispatch(setMatchId(params.slug));
+    dispatch(setInningNumber(inningNumber.toString())); // TODO - change Inning number to something else
+    dispatch(getMatchScoreboardInformation(fetchMatchById?.data));
+    setReFetch(false);
+  };
   useEffect(() => {
     getMatchInfo();
   }, []);
+  useEffect(() => {
+    if (reFetch == true) getMatchInfo();
+  }, [reFetch]);
   return (
     !loading && (
       <React.Fragment>
         {loadingSelector.isLoading === true ? (
           <>
-           <Loading />
+            <Loading />
           </>
         ) : (
           <React.Suspense fallback={<h1>Something went wrong</h1>} key={"main"}>
@@ -91,8 +106,21 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
                   <code className="text-xs font-extrabold">
                     {selector.match_details?.format}
                   </code>
-                  <code className="text-xs font-extrabold">
+                  {/* <code className="text-xs font-extrabold">
                     UK Trail by 243 Runs
+                  </code> */}
+                </div>
+                <div className="flex flex-col gap-2 m-2">
+                  <code className="text-xs font-extrabold">
+                    <Select
+                      defaultValue={inningNumber.toString()}
+                      onSelect={selectInning}
+                    >
+                      <Select.Option value="1">Inning 1</Select.Option>
+                      <Select.Option value="2">Inning 2</Select.Option>
+                      <Select.Option value="3">Inning 3</Select.Option>
+                      <Select.Option value="4">Inning 4</Select.Option>
+                    </Select>
                   </code>
                 </div>
               </div>
@@ -137,6 +165,9 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
                 <CurrentOver />
                 <PreviousOver />
                 <Runs />
+              </div>
+              <div className="flex flex-col  w-fit ">
+                <EditBalls refetchParent={refetchParent} />
               </div>
             </div>
           </React.Suspense>

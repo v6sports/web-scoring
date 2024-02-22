@@ -42,13 +42,12 @@ export async function POST(req: Request) {
   // create folderForBowlers END
 
   // let { player_id = -1 } = bowlerList;
-  let bowlerJsonFile = `${folderForBowlers}/${playerId}`;
+  let bowlerJsonFile = `${folderForBowlers}/${playerId}.json`;
 
   //check for the bowlerFile and creating for the bowler file START
 	try {
 		await fsPromise
     .access(`${bowlerJsonFile}`, fsPromise.constants.W_OK).catch(async (e) => {
-			console.log("GOOGLE>COME")
       await fsPromise
         .writeFile(`${bowlerJsonFile}`, "[]", "utf-8").catch((e) => {
           return NextResponse.json({

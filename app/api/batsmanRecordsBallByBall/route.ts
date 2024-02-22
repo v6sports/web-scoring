@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   // create batterfolder END
 
   let { player_id } = batsmanList;
-  let batterJsonFile = `${folderForBatters}/${player_id}`;
+  let batterJsonFile = `${folderForBatters}/${player_id}.json`;
 
   //check for the batterFile and creating for the batter file START
   await fsPromise

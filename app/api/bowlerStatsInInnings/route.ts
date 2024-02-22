@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
   try {
     let playersInfo: bowlerDetails[] | any = await fsPromise
-      .readFile(`${folderForBatters}/${playerId}`, "utf-8")
+      .readFile(`${folderForBatters}/${playerId}.json`, "utf-8")
       .catch((e) => {
         return NextResponse.json({
           status: false,

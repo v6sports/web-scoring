@@ -4,12 +4,12 @@ import { Iscoreboard, Player } from "../interfaces/matchScoreboard.interface";
 interface IwhichTeamPlayers {
   key: "batting" | "bowling";
   matchData: Iscoreboard;
-  currentInnings: 1 | 2 | 3 | 4;
+  currentInnings: Number;
 }
 
-const getPlayers = (props: IwhichTeamPlayers,teamName='') => {
+const getPlayers = (props: IwhichTeamPlayers,teamName=null) => {
   const { key, matchData, currentInnings } = props;
-
+	//@ts-ignore
   const currentInningsData = matchData.innings?.[currentInnings];
   const battingTeamId = currentInningsData?.team_id;
 
@@ -31,7 +31,7 @@ const getPlayers = (props: IwhichTeamPlayers,teamName='') => {
   if (currentInnings === 2 || currentInnings === 4) {
     if (key === "batting") {
 			if(teamName)  return allPlayerListTeamB?.name
-      return allPlayerListTeamB?.players;
+		  return allPlayerListTeamB?.players;
     }
     if (key === "bowling") {
 			if(teamName)  return allPlayerListTeamA?.name
@@ -90,11 +90,12 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
   switch (true) {
     case ballByBall.extra_type == "wide" || ballByBall.extra_type == "no-ball":
       break;
+			//@ts-ignore
     case is_out === 1 && (ball_number == 0 || ball_number == 6):
       onStrikeBatsman = nonStrikeBatsman;
       nonStrikeBatsman = -1;
       break;
-
+//@ts-ignore
     case is_out === 1 && (ball_number !== 0 || ball_number != 6):
       onStrikeBatsman = -1;
       break;
@@ -102,7 +103,7 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
     case runs % 2 != 0 && (ball_number === 0 || ball_number === 6):
       console.log("Cheers");
       break;
-
+//@ts-ignore
     case runs % 2 !== 0 && is_out !== 1:
       // Switch the strike
       [onStrikeBatsman, nonStrikeBatsman] = [nonStrikeBatsman, onStrikeBatsman];
@@ -110,6 +111,7 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
 
     case ball_number === 0 ||
       ball_number === 6 ||
+			//@ts-ignore
       (is_out === 1 && (ball_number !== 6 || ball_number !== 0)):
       // Switch the strike at the end of the over or when the batsman is out on a non-zero ball number
       [onStrikeBatsman, nonStrikeBatsman] = [nonStrikeBatsman, onStrikeBatsman];

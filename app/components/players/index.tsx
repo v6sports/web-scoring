@@ -14,7 +14,7 @@ const Players = () => {
   useEffect(() => {
     const inningNumber = selector?.inning_number || 0;
     if (inningNumber > 0) {
-      const bowlingTeam = getPlayers({
+      const bowlingTeam:any = getPlayers({
         //@ts-ignore
         currentInnings: inningNumber,
         key: "bowling",
@@ -38,7 +38,7 @@ const Players = () => {
   return (
     <div className="grid grid-cols-3  gap-4">
       {bowlingTeamPlayers.flatMap((item: Player) => {
-        const nameParts = item.name?.split(" ");
+        const nameParts:any = item.name?.split(" ");
         const firstNameInitials =
           nameParts?.length > 0 ? nameParts[0]?.substring(0, 1) : "";
         const lastNameInitials =

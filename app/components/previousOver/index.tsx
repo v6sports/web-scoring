@@ -3,7 +3,7 @@ import { Tooltip } from "antd";
 import React, { useEffect } from "react";
 
 const PreviousOver = () => {
-  const scoreBallByBallData = useAppSelector(
+  const scoreBallByBallData:any = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
   useEffect(() => {
@@ -22,7 +22,7 @@ const PreviousOver = () => {
           Prev Ov.
         </code>
 				{scoreBallByBallData.fullScore?.previousOver?.length > 0 &&
-          scoreBallByBallData.fullScore?.previousOver?.map((ball) => {
+          scoreBallByBallData.fullScore?.previousOver?.map((ball:any) => {
 						let circleColor = 'bg-slate-300';
 						let circileSuffix = ''
 						let completeMessage = ''

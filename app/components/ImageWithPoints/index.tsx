@@ -16,8 +16,7 @@ interface CanvasOverlayProps {
 
 const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
   imageUrl,
-  width,
-  height,
+  width
 }) => {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -45,7 +44,7 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
       context.fill();
     }
   };
-	const selectExtra = (e) => {
+	const selectExtra = (e:any) => {
 		dispacth(updateExtras({ extra_type: e.target.value }));
 	}
   return (

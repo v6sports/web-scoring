@@ -2,11 +2,11 @@ import { IballByBall } from "../interfaces/ballByBall.interface";
 import { Iscoreboard } from "../interfaces/matchScoreboard.interface";
 
 const overBalls = (
-  updatedScore: Iscoreboard,
-  ballByBall: IballByBall,
+  updatedScore: any,
+  ballByBall: any,
   inningNumber: number
 ) => {
-  let scoreToUpdate = updatedScore.innings?.[inningNumber];
+  let scoreToUpdate:any = updatedScore.innings?.[inningNumber];
 
   let currentBall = ballByBall["ball_number"];
   let countAllBallsInOver =

@@ -6,7 +6,7 @@ import React, { useEffect } from "react";
 import Extras from "../extras";
 
 const LiveScore = () => {
-	const selector = useAppSelector((state) => state.matchSliceReducer);
+	const selector:any = useAppSelector((state) => state.matchSliceReducer);
 
 	const [battingTeamNameInInnings, setBattingTeamNameInInnings] =
     React.useState<any>([]);
@@ -26,9 +26,9 @@ const LiveScore = () => {
             key: "batting",
             matchData: selector,
           },
-          "tes"
+
         );
-        let teamScore = await fetchScoreApi(selector.match_id, i.toString());
+        let teamScore:any = await fetchScoreApi(selector.match_id, i.toString());
         console.log(teamScore?.data, "teamScore");
         arrayForTeam.push({
           teamName,
@@ -64,10 +64,10 @@ const LiveScore = () => {
         </code>
       </div>
       <Collapse>
-        {console.log(battingTeamNameInInnings, "battingTeamNameInInnings	")}
+
         <Collapse.Panel header="Scores" key="1" className="bg-green-200">
           {battingTeamNameInInnings?.length > 0 &&
-            battingTeamNameInInnings?.map((e) => {
+            battingTeamNameInInnings?.map((e:any) => {
               let scoreboardFull = e?.scoreBoard?.fullScore;
               return (
                 <div className="flex flex-row items-center gap-2">

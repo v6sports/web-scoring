@@ -6,13 +6,12 @@ interface currentInningScore  {
 }
 const Extras:React.FC<currentInningScore> = (props) => {
 let {extrasFromScore} = props;
-	const total = extrasFromScore ? Object?.values(extrasFromScore).reduce(
-    (acc, val) => acc + (typeof val === "number" ? val : 0),
+	const total:any = extrasFromScore ? Object?.values(extrasFromScore).reduce(
+    (acc:any, val) => acc + (typeof val === "number" ? val : 0),
     0
   ) : 0;
   return (
     <Collapse>
-		{console.log('extras',props.extrasFromScore)}
       <Collapse.Panel
         key={2}
         header={

@@ -35,10 +35,10 @@ const Bolwer = () => {
   const inningsSlice = useAppSelector((state) => state.inningsTrackSlice);
   const [isBolwerSelected, setIsBolwerSelected] = useState(false);
 
-  const scoreBallByBallData = useAppSelector(
+  const scoreBallByBallData:any = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
-  const [playerBowlerStats, setPlayerBowlerStats] = useState<bowlerDetails>({
+  const [playerBowlerStats, setPlayerBowlerStats] = useState<any>({
     runs: 0,
     player_id: "",
     ballNumber: 0,
@@ -63,7 +63,7 @@ const Bolwer = () => {
     const inningNumber = Number(inningsSlice.inning_number) || 0;
     if (inningNumber > 0) {
 
-      const bowlingTeam = getPlayers({
+      const bowlingTeam:any = getPlayers({
         //@ts-ignore
         currentInnings: inningNumber,
         key: "bowling",
@@ -80,7 +80,7 @@ const Bolwer = () => {
     // return () => setBowlingTeamPlayer([]);
   }, [inningSelector?.inning_number && selector]);
 
-  const bowlingStats = async (playerId) => {
+  const bowlingStats = async (playerId:any) => {
     if (playerId) {
       bowlerStats(playerId);
       const fetchBattingStats = await Axios.request({
@@ -96,7 +96,7 @@ const Bolwer = () => {
     }
   };
 
-  const bowlerStats = async (playerId) => {
+  const bowlerStats = async (playerId:any) => {
     if (playerId) {
       const fetchBattingStats = await Axios.request({
         url: "/api/bowlerStatsInInnings",
@@ -162,14 +162,15 @@ const Bolwer = () => {
       >
         <Select
           // open={ballByBallResponse?.on_attack !=-1 ? false : true}
+					//@ts-ignore
           key={parseInt(ballByBallResponse?.on_attack)}
+						//@ts-ignore
           onSelect={strikerBowler}
           style={{ width: "150px" }}
           popupMatchSelectWidth
           defaultValue={ballByBallResponse?.on_attack}
         >
-					{console.log(bowlingTeamPlayers, "BOWLING TEAM PLAYERS")}
-          {bowlingTeamPlayers.length > 1 &&
+				  {bowlingTeamPlayers.length > 1 &&
             bowlingTeamPlayers.flatMap((bowler) => {
               console.log(
                 scoreBallByBallData?.fullScore?.previousOver,
@@ -194,7 +195,7 @@ const Bolwer = () => {
               O
             </p>
             <p className="text-center text-lightTextColor text-xs">
-              {playerBowlerStats.overs - 1}.{playerBowlerStats.currentBall}
+              {playerBowlerStats?.overs - 1}.{playerBowlerStats.currentBall}
             </p>
           </div>
           <div className="flex flex-col justify-center w-full">

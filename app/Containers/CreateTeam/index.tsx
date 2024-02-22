@@ -4,9 +4,10 @@ import { Button, Form, Input, Select } from "antd";
 
 const CreateTeam = () => {
 	const [selectedPlayer,setSelectedPlayer] = useState<[]>([]);
-	const selectPlayer = (item) => {
+	const selectPlayer = (item:any) => {
 
 		if(item) {
+			//@ts-ignore
 			setSelectedPlayer([...selectedPlayer, item]);
 		}
 

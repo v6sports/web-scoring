@@ -3,7 +3,7 @@ import { Tooltip } from "antd";
 import React, { useEffect } from "react";
 
 const CurrentOver = () => {
-  const scoreBallByBallData = useAppSelector(
+  const scoreBallByBallData:any = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
 	const selector = useAppSelector((state) => state.matchSliceReducer);
@@ -25,7 +25,7 @@ const CurrentOver = () => {
           Curr Ov.
         </code>
         {scoreBallByBallData?.fullScore?.currentOver?.length > 0 &&
-          scoreBallByBallData.fullScore?.currentOver?.flatMap((ball) => {
+          scoreBallByBallData.fullScore?.currentOver?.flatMap((ball:any) => {
 						console.log(ball?.is_out,"BALLBYBALL-CURENT")
 						let circleColor = 'bg-slate-300';
 						let circileSuffix = ''

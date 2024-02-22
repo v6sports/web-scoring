@@ -103,7 +103,7 @@ const Wicket = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const wicketSelecter = useAppSelector((state) => state.inningsTrackSlice);
 
-	const handleButtonClick = (value) => {
+	const handleButtonClick = (value:any) => {
     if (value == selectedWicketType) {
       setSelectedWicketType(null);
 			dispatch(resetOutMethod());
