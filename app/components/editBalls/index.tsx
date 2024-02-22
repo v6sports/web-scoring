@@ -29,7 +29,7 @@ const EditBalls:React.FC<iProps> = (props) => {
 
     let { over, on_strike, on_attack, match_id, ballNumber, inning_number } =
       key;
-    await Axios.post("http://localhost:3000/api/undoBall", {
+    await Axios.post("/api/undoBall", {
       over: over,
       batterId: on_strike,
       bowlerId: on_attack,
