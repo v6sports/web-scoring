@@ -1,18 +1,12 @@
 "use client";
 import type { Metadata } from "next";
-import { Inter, Roboto } from "next/font/google";
+
 import "./globals.scss";
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import { ReduxProvider } from "@/redux/provider";
 
 const { NEXT_PUBLIC_PAGE_TITLE } = process.env;
-const inter = Inter({ subsets: ["latin"] });
-
-const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
 
  const metadata: Metadata = {
   title: NEXT_PUBLIC_PAGE_TITLE,
@@ -25,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={roboto.className}>
-      <body className={inter.className}>
+    <html lang="en" >
+      <body >
 
         <ReduxProvider>{children} </ReduxProvider>
       </body>
