@@ -304,14 +304,14 @@ const Runs = () => {
   };
 
 	const recordBall = () => {
-		const localIP = "192.168.1.100";
+		const localIP = "localhost";
 		const batsmanOnStrike = runTicket.on_strike;
 		const matchID = wicketSelecor.match_id;
 		const inningNumber = wicketSelecor.inning_number;
 		const ballNumber = scoreBallByBallData.fullScore?.lastBallOfOver?.nextBallNumber;
 		const overNumber = scoreBallByBallData.fullScore?.currentOver?.length;
 		const currentTime = moment().format('hh:mm:ss');
-		const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}-${inningNumber}-${batsmanOnStrike}-${overNumber || 0}-${ballNumber || 0 }-${currentTime}`;
+		const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}-${inningNumber}-${batsmanOnStrike}-${overNumber || 0}-${ballNumber || 1 }-${currentTime}`;
 		setSelfRecordBall(recordBallUrl);
 		message.success("Ball Recorded");
 		Axios.request({
