@@ -304,7 +304,7 @@ const Runs = () => {
   };
 
 	const recordBall = () => {
-		const localIP = "http://192.168.1.100";
+		const localIP = "192.168.1.100";
 		const batsmanOnStrike = runTicket.on_strike;
 		const matchID = wicketSelecor.match_id;
 		const inningNumber = wicketSelecor.inning_number;
