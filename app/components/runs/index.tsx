@@ -7,7 +7,7 @@ import {
   updateMatchScoreBallByBall,
 } from "@/redux/features/slices/ballByBallSlice";
 import { setScoreBallByBall } from "@/redux/features/slices/scoreBallByBallSlice";
-import { AppDispatch, useAppSelector } from "@/redux/store";
+import { AppDispatch, store, useAppSelector } from "@/redux/store";
 import { Button, Input, InputNumber, message } from "antd";
 import Axios from "axios";
 import moment from "moment";
@@ -116,7 +116,7 @@ const Runs = () => {
     ) {
       message.destroy();
       message.loading("Saving Wicket");
-      console.log(runTicket.on_strike, "GET ACTIVE PACE");
+
       dispacth(setBatsman(runTicket.on_strike));
       dispacth(setBowler(runTicket.on_attack));
       dispacth(setOverNumber(overNumber?.toString() ?? ""));
@@ -148,7 +148,7 @@ const Runs = () => {
     if (out_method == -1) {
       batsman_player_id = -1;
     }
-    console.log(runTicket);
+
 
     let json: any = {
       localId: 0,
@@ -294,7 +294,7 @@ const Runs = () => {
 
   const isSaveEnabled = () => {
     let { on_strike = -1, non_strike = -1, on_attack = -1 } = runTicket;
-    console.log(JSON.stringify(runTicket), "GET ACTIVE PACE-practival");
+
     if (on_strike > 0 && non_strike > 0 && Number(on_attack) > 0) {
       setSaveButtonEnabled(true);
     }
@@ -307,11 +307,22 @@ const Runs = () => {
 		const localIP = "localhost";
 		const batsmanOnStrike = runTicket.on_strike;
 		const matchID = wicketSelecor.match_id;
+		// const inningId = moment().format("hh:mm:ss");  //wicketSelecor?.inning_id; // replace by timeToday in form of 1451
 		const inningNumber = wicketSelecor.inning_number;
+		const dateOfMatch= moment().format('DDMM') // date in form of DDMM
+		const ball_id = batsmanOnStrike
+
+		// const over_number
+		// const ball_id
+		// const ball_number
+		// const extra_count
+
 		const ballNumber = scoreBallByBallData.fullScore?.lastBallOfOver?.nextBallNumber;
 		const overNumber = scoreBallByBallData.fullScore?.currentOver?.length;
-		const currentTime = moment().format('hh:mm:ss');
-		const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}-${inningNumber}-${batsmanOnStrike}-${overNumber || 0}-${ballNumber || 1 }-${currentTime}`;
+		const currentTime = moment().format('hhmmss');
+		// /sendEvent?BallNo=BallNo=${match_id}_${inning_id}_${inning_number}_${over}_${over_number}_${ball_id}_${ball_number}_${extra_count}`
+		// ${matchID}_${inningId}_${inningNumber}_${dateOfMatch}_${overNumber}_${ball_id}_${ballNumber || 1 }`
+		const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}_${currentTime}_${inningNumber}_${dateOfMatch}_${overNumber}_${ball_id}_${ballNumber || 1 }_0`;
 		setSelfRecordBall(recordBallUrl);
 		message.success("Ball Recorded");
 		Axios.request({

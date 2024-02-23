@@ -148,7 +148,7 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
                   <div className="w-fit   bg-slate-100 ">
                     <div className="w-fit shadow-lg rounded-lg">
                       <div className="w-fit min-h-48  overflow-y-hidden bg-red-200 w-full">
-                        <code className="font-bold">Bolwing Length</code>
+                        <code className="font-bold">Bowling Length</code>
                         <BallLength />
                       </div>
                       <div className="min-h-48w-full overflow-y-hidden bg-green-200">
