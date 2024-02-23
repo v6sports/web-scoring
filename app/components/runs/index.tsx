@@ -450,7 +450,7 @@ const Runs = () => {
         <Wicket />
       </div>
 			<div className="flex flex-row gap-4 mt-4">
-			<Button onClick={recordBall} disabled={disableSelfRecord}  className="bg-red-900 text-white" block> Record Ball</Button>
+			<Button onClick={recordBall} disabled={disableSelfRecord}  className="bg-red-900 h-14 text-white" block> Record Ball</Button>
 			</div>
     </div>
   );

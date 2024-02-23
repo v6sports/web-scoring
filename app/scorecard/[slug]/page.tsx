@@ -39,7 +39,6 @@ const scorecard = ({ params }: { params: { slug: string } }) => {
     });
 
     if (matchScoreBoard.status === 200) {
-      console.log(matchScoreBoard.data);
       setFullMatchScoreCard(matchScoreBoard.data);
     }
 

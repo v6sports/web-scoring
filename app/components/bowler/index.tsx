@@ -162,15 +162,15 @@ const Bolwer = () => {
       >
         <Select
           // open={ballByBallResponse?.on_attack !=-1 ? false : true}
-					//@ts-ignore
+          //@ts-ignore
           key={parseInt(ballByBallResponse?.on_attack)}
-						//@ts-ignore
+          //@ts-ignore
           onSelect={strikerBowler}
           style={{ width: "150px" }}
           popupMatchSelectWidth
           defaultValue={ballByBallResponse?.on_attack}
         >
-				  {bowlingTeamPlayers.length > 1 &&
+          {bowlingTeamPlayers.length > 1 &&
             bowlingTeamPlayers.flatMap((bowler) => {
               console.log(
                 scoreBallByBallData?.fullScore?.previousOver,
@@ -195,7 +195,10 @@ const Bolwer = () => {
               O
             </p>
             <p className="text-center text-lightTextColor text-xs">
-              {playerBowlerStats?.overs - 1}.{playerBowlerStats.currentBall}
+              {playerBowlerStats?.overs - 1 < 1
+                ? 0
+                : playerBowlerStats?.overs - 1 || 0}
+              .{playerBowlerStats?.currentBall || 0}
             </p>
           </div>
           <div className="flex flex-col justify-center w-full">
@@ -203,7 +206,7 @@ const Bolwer = () => {
               R
             </p>
             <p className="text-center text-lightTextColor text-xs">
-              {playerBowlerStats?.totalRuns}
+              {playerBowlerStats?.totalRuns || 0}
             </p>
           </div>
 
@@ -226,7 +229,7 @@ const Bolwer = () => {
             <p className="text-center  font-extralight text-xs text-lightTextColor">
               EX
             </p>
-            <p className="text-center text-lightTextColor text-xs">4</p>
+            <p className="text-center text-lightTextColor text-xs">-</p>
           </div>
         </div>
 

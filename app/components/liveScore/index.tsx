@@ -22,14 +22,14 @@ const LiveScore = () => {
       if (i <= maxNumberOfInning && i > 0) {
         let teamName = getPlayers(
           {
-            currentInnings: Number(i + 1),
+            currentInnings: Number(inningNumber),
             key: "batting",
             matchData: selector,
           },
 					"Name"
         );
         let teamScore:any = await fetchScoreApi(selector.match_id, i.toString());
-        console.log(teamScore?.data, "teamScore");
+				console.log(teamScore)
         arrayForTeam.push({
           teamName,
           inningNumber: i,
@@ -38,7 +38,6 @@ const LiveScore = () => {
       }
     }
 	setBattingTeamNameInInnings(arrayForTeam);
-	console.log(arrayForTeam,"arrayForTeam")
 }
   useEffect(() => {
 	init()

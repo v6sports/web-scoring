@@ -14,7 +14,6 @@ const overBalls = (
       ? ballByBall["ball_number"]
       : ballByBall["ball_number_included_extra"];
 
-			console.log(currentBall,countAllBallsInOver,"nextJKS")
   if (ballByBall.extra_type == "wide" || ballByBall.extra_type == "no-ball") {
     //@ts-ignore
     countAllBallsInOver = countAllBallsInOver + 1;
