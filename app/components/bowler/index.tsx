@@ -17,7 +17,11 @@ import {
 import { setBowler } from "@/redux/features/slices/inningsTrackSlice";
 import { setLastOverBolwedBy } from "@/redux/features/slices/matchSlice";
 import { setBowlingPlayers } from "@/redux/features/slices/teams/bowlingTeamSlice";
-import { setMatchSaveFalseStatus, setMatchSaveTrueStatus } from "@/redux/features/slices/matchSaveSlice";
+import {
+  setMatchSaveFalseStatus,
+  setMatchSaveTrueStatus,
+} from "@/redux/features/slices/matchSaveSlice";
+import CustomModal from "../modal";
 
 interface Bolwer {
   onStrikebowler: playingbowlerStats;
@@ -35,9 +39,6 @@ const Bolwer = () => {
   const inningsSlice = useAppSelector((state) => state.inningsTrackSlice);
   const [isBolwerSelected, setIsBolwerSelected] = useState(false);
 
-  const scoreBallByBallData:any = useAppSelector(
-    (state) => state.scoreBallByBallSlice
-  );
   const [playerBowlerStats, setPlayerBowlerStats] = useState<any>({
     runs: 0,
     player_id: "",
@@ -47,9 +48,11 @@ const Bolwer = () => {
   });
   const dispatch = useDispatch<AppDispatch>();
   const selector = useAppSelector((state) => state.matchSliceReducer);
-	const inningSelector = useAppSelector((state) => state.inningsTrackSlice);
+  const inningSelector = useAppSelector((state) => state.inningsTrackSlice);
   const [bowlingTeamPlayers, setBowlingTeamPlayer] = useState<Player[]>([]);
-
+	const scoreBallByBallData:any = useAppSelector(
+    (state) => state.scoreBallByBallSlice
+  );
   const [onAttackStats, setOnAttackStats] = useState<bowlerDetails>({
     wickets: 0,
     ballNumber: 0,
@@ -62,8 +65,7 @@ const Bolwer = () => {
   useEffect(() => {
     const inningNumber = Number(inningsSlice.inning_number) || 0;
     if (inningNumber > 0) {
-
-      const bowlingTeam:any = getPlayers({
+      const bowlingTeam: any = getPlayers({
         //@ts-ignore
         currentInnings: inningNumber,
         key: "bowling",
@@ -80,7 +82,7 @@ const Bolwer = () => {
     // return () => setBowlingTeamPlayer([]);
   }, [inningSelector?.inning_number && selector]);
 
-  const bowlingStats = async (playerId:any) => {
+  const bowlingStats = async (playerId: any) => {
     if (playerId) {
       bowlerStats(playerId);
       const fetchBattingStats = await Axios.request({
@@ -96,7 +98,7 @@ const Bolwer = () => {
     }
   };
 
-  const bowlerStats = async (playerId:any) => {
+  const bowlerStats = async (playerId: any) => {
     if (playerId) {
       const fetchBattingStats = await Axios.request({
         url: "/api/bowlerStatsInInnings",
@@ -113,14 +115,13 @@ const Bolwer = () => {
   };
 
   useEffect(() => {
-    console.log(ballByBallResponse, "CHECK FOR BALL NUMBER PLEASE");
     if (ballByBallResponse.ball_number == 6 && isBolwerSelected === false) {
       dispatch(setBowlerEmpty());
     }
     if (ballByBallResponse.ball_number == 1) {
       setIsBolwerSelected(false);
     }
-		if (Number(ballByBallResponse?.on_attack) < 0) {
+    if (Number(ballByBallResponse?.on_attack) < 0) {
       dispatch(setMatchSaveFalseStatus());
     }
     if (ballByBallResponse.on_attack) {
@@ -133,7 +134,7 @@ const Bolwer = () => {
 
   const strikerBowler = (player: number) => {
     setIsBolwerSelected(true);
-		if (
+    if (
       Number(ballByBallResponse.on_strike) > 0 &&
       Number(ballByBallResponse.non_strike) > 0
     ) {
@@ -153,9 +154,14 @@ const Bolwer = () => {
   } = onAttackStats;
 
   let calulateEconomy = (runs / ((overNumber - 1) * 6 + ballNumber)) * 6;
-  return (
-    <div className="flex flex-col gap-1  w-full justify-center items-center  rounded-lg border border-gray-200 border-1 bg-red-100">
-      {/* <p className="uppercase text-xs font-bold underline">Bolwer</p> */}
+	let getPreviousBolwerName = () => {
+		if(scoreBallByBallData.fullScore?.previousOver.length > 0) {
+		return 	bowlingTeamPlayers?.filter(e => e.player_id ==scoreBallByBallData.fullScore?.previousOver[0]['bolwerId'])[0]?.name || ''
+		}
+		else return ''
+	}
+  const bolwerDropdown = () => {
+    return (
       <div
         id="playerOnStrike "
         className="flex-1 flex flex-row items-center  gap-4 w-full justify-center"
@@ -172,10 +178,6 @@ const Bolwer = () => {
         >
           {bowlingTeamPlayers.length > 1 &&
             bowlingTeamPlayers.flatMap((bowler) => {
-              console.log(
-                scoreBallByBallData?.fullScore?.previousOver,
-                "GET LAST OVER"
-              );
               if (
                 scoreBallByBallData?.fullScore?.currentOver[5]?.bolwerId !=
                 bowler.player_id
@@ -238,6 +240,28 @@ const Bolwer = () => {
           <Select.Option key={"lhb"}>LHB</Select.Option>
         </Select>
       </div>
+    );
+  };
+  return (
+    <div className="flex flex-col gap-1  w-full justify-center items-center  rounded-lg border border-gray-200 border-1 bg-red-100">
+      {/* <p className="uppercase text-xs font-bold underline">Bolwer</p> */}
+      <CustomModal
+        visible={ballByBallResponse.on_attack == -1 ? true : false}
+        hide={() => console.log("Hide")}
+        children={
+          <div >
+            <h1 className="uppercase font-extrabold text-sm text-center">Select Bolwer</h1>
+						<hr  className="m-6"/>
+            {getPreviousBolwerName() && <div className="flex flex-row justify-center align-middle">
+              <p className="text-sm font-medium ">Previous Bolwer</p>
+              <code className="text-sm font-bold  ml-3 ">{getPreviousBolwerName() ? getPreviousBolwerName() : ""}</code>
+            </div>}
+						<hr className="mt-4 mb-4" />
+            {bolwerDropdown()}
+          </div>
+        }
+      ></CustomModal>
+      {bolwerDropdown()}
       <div className="flex flex-row gap-1">
         <Select defaultValue={side}>
           <Select.Option key="around">Around WKT</Select.Option>

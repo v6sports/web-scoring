@@ -17,6 +17,10 @@ export interface IballByBall {
   non_attack?: number;
   non_strike?: number;
   ball_number?: number ;
+	appeal_type?: string | number;
+	appeal_by?: number |string	;
+	appeal_result?: string | number;
+	appeal_umpire_end?: string | number;
 	curr_over_ball?:number;
 	nextBallNumber?:number;
   ball_number_included_extra?: number; // added Extra

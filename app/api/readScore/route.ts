@@ -115,12 +115,12 @@ export async function POST(req: Request) {
       }
 
 			if (over.extra_type == "leg-bye") {
-        let extraRunsWide = extraRuns.legBye + over?.runs;
+        let extraRunsWide = extraRuns.legBye + over?.extras || 0;
         extraRuns["legBye"] = extraRunsWide;
 				validBalls += 1;
       }
 			if (over.extra_type == "bye") {
-        let extraRunsWide = extraRuns.legBye + over?.runs;
+        let extraRunsWide = extraRuns.legBye + over?.extras || 0;
         extraRuns["bye"] = extraRunsWide;
 				validBalls += 1;
       }

@@ -3,28 +3,25 @@
 import React, { useRef, useEffect, useState } from "react";
 
 import "./style.css";
-import { Image, Radio } from "antd";
+import { Button, Image, Radio } from "antd";
 import { url } from "inspector";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { updateExtras } from "@/redux/features/slices/ballByBallSlice";
+import { resetAppeal, updateExtras } from "@/redux/features/slices/ballByBallSlice";
+import CustomModal from "../modal";
+import Appeal from "../appeal";
 
 interface CanvasOverlayProps {
   imageUrl: string;
   width: number;
 }
 
-const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
-  imageUrl,
-  width
-}) => {
-
+const CanvasOverlay: React.FC<CanvasOverlayProps> = ({ imageUrl, width }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-	const dispacth = useDispatch<AppDispatch>();
-  const scoreBallByBallData = useAppSelector(
-    (state) => state.ballByBallSlice
-  );
+  const dispacth = useDispatch<AppDispatch>();
+  const [showModalForAppeal, setShowModalForAppeal] = useState(false);
+  const scoreBallByBallData = useAppSelector((state) => state.ballByBallSlice);
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
@@ -44,9 +41,13 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
       context.fill();
     }
   };
-	const selectExtra = (e:any) => {
-		dispacth(updateExtras({ extra_type: e.target.value }));
-	}
+  const hideModal = () => {
+
+    setShowModalForAppeal(false);
+  };
+  const selectExtra = (e: any) => {
+    dispacth(updateExtras({ extra_type: e.target.value }));
+  };
   return (
     <div className="m-2">
       <canvas
@@ -93,7 +94,7 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
       </div>
       <Radio.Group
         style={{ top: 615, position: "absolute", marginLeft: 8 }}
-				onChange={selectExtra}
+        onChange={selectExtra}
         optionType="button"
         size="small"
         buttonStyle={"solid"}
@@ -116,6 +117,18 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           },
         ]}
       />
+      <Button
+        className="bg-orange"
+        onClick={() => setShowModalForAppeal(true)}
+        style={{ position: "absolute", top: 650, left: 8 }}
+      >
+        Appeal
+      </Button>
+      <CustomModal
+        children={<Appeal />}
+        hide={hideModal}
+        visible={showModalForAppeal}
+      ></CustomModal>
     </div>
   );
 };

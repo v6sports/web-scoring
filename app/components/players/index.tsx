@@ -7,16 +7,19 @@ import { useDispatch } from "react-redux";
 
 const Players = () => {
   const selector = useAppSelector((state) => state.matchSliceReducer);
+  const inningNumberSelector = useAppSelector(
+    (state) => state.inningsTrackSlice
+  );
   const wicketSelector = useAppSelector((state) => state.inningsTrackSlice);
   const dispatch = useDispatch<AppDispatch>();
   const [bowlingTeamPlayers, setBowlingTeamPlayer] = useState<Player[]>([]);
   const [selectFielder, setSelectFielder] = useState<Player>({});
   useEffect(() => {
-    const inningNumber = selector?.inning_number || 0;
+    const inningNumber = Number(inningNumberSelector?.inning_number) || 0;
     if (inningNumber > 0) {
-      const bowlingTeam:any = getPlayers({
+      const bowlingTeam: any = getPlayers({
         //@ts-ignore
-        currentInnings: inningNumber,
+        currentInnings: 2,
         key: "bowling",
         matchData: selector,
       });
@@ -38,7 +41,7 @@ const Players = () => {
   return (
     <div className="grid grid-cols-3  gap-4">
       {bowlingTeamPlayers.flatMap((item: Player) => {
-        const nameParts:any = item.name?.split(" ");
+        const nameParts: any = item.name?.split(" ");
         const firstNameInitials =
           nameParts?.length > 0 ? nameParts[0]?.substring(0, 1) : "";
         const lastNameInitials =

@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Select, message } from "antd";
+import { Button, Select, message } from "antd";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { Player } from "@/app/interfaces/matchScoreboard.interface";
 import getPlayers from "@/app/Utils/playersUtils";
 import { IballByBall } from "@/app/interfaces/ballByBall.interface";
 import { useDispatch } from "react-redux";
-import {
+import ballByBallSlice, {
   setBatterNonStrike,
   setBatterOnStrike,
 } from "@/redux/features/slices/ballByBallSlice";
@@ -116,9 +116,18 @@ const Batsman: React.FC<any> = (props) => {
     }
     dispatch(setBatterNonStrike(player));
   };
+
+	const swapBatsman = () => {
+		let _onStrike = ballByBallResponse.on_strike;
+		let _nonStrike = ballByBallResponse.non_strike;
+		dispatch(setBatterOnStrike(_nonStrike));
+		dispatch(setBatterNonStrike(_onStrike));
+		console.log(ballByBallResponse)
+	}
   return (
     <div className="flex flex-col rounded-lg w-full justify-center items-center bg-green-100">
       {/* <p className="uppercase text-xs font-bold underline">Batsman</p> */}
+
       <div
         id="playerOnStrike "
         className="flex-1 flex flex-row items-center  gap-4 w-full justify-center"
@@ -253,6 +262,7 @@ const Batsman: React.FC<any> = (props) => {
           </Select>
         </div>
       </div>
+			<Button className="bg-red-900 text-white" onClick={swapBatsman}>Change Strike</Button>
     </div>
   );
 };

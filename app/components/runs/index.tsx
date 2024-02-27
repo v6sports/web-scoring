@@ -1,4 +1,3 @@
-import { IballByBall } from "@/app/interfaces/ballByBall.interface";
 import { batter } from "@/app/interfaces/batter.interface";
 import { bowler } from "@/app/interfaces/bowler.interface";
 import { IScoreBallByBall } from "@/app/interfaces/scoreBallByBall.interface";
@@ -27,6 +26,7 @@ import {
   setLoadingFalse,
   setLodingTrue,
 } from "@/redux/features/slices/scoreboardProgressSlice";
+import { resetAppeal } from "@/redux/features/slices/appealSlice";
 
 const Runs = () => {
   const [selectedButton, setSelectedButton] = useState<string | number | null>(
@@ -36,8 +36,11 @@ const Runs = () => {
 	const [disableSelfRecord, setDisableSelfRecord] = useState(false);
 	const [selfRecordBall, setSelfRecordBall] = useState('');
   const dispacth = useDispatch<AppDispatch>();
+	const [lastClickTime, setLastClickTime] = useState(0);
   const wicketSelecor = useAppSelector((state) => state.inningsTrackSlice);
-  const matchSaveStatus = useAppSelector((state) => state.matchSaveSlice);
+
+
+	const appealSlice = useAppSelector((state) => state.appealSlice);
   const scoreBallByBallData = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
@@ -78,7 +81,27 @@ const Runs = () => {
   useEffect(() => {
     isSaveEnabled();
   }, [JSON.stringify(runTicket)]);
-  const submitBallByBall = async () => {
+  const submitBallByBall = async (e:any) => {
+		e.preventDefault();
+		e.stopPropagation();
+		try {
+			let previiousBall = scoreBallByBallData.fullScore?.currentOver[scoreBallByBallData.fullScore?.currentOver?.length -1] || -1;
+			const currentTime = moment();
+			const providedTime = moment(previiousBall?.currentTimeStamp, 'HH:mm:ss');
+			const timeGap = providedTime.diff(currentTime);
+			if (moment.duration(timeGap).seconds() > 58) {
+        message.destroy();
+        message.error("Please wait 2 seconds before saving another ball");
+        return;
+      }
+			// if (previiousBall?.currentTimeStamp.diff(moment(), "seconds") < 10) {
+      //   message.error("Please wait 10 seconds before saving another ball");
+      //   return;
+      // }
+		} catch (error) {
+			console.log(error,":ERROR")
+		}
+		// return;
     if (runTicket.on_attack === -1) {
       message.destroy();
       message.error("Please select a bowler");
@@ -99,7 +122,7 @@ const Runs = () => {
     message.loading("Please wait");
     dispacth(setLodingTrue());
     let _lastBall = scoreBallByBallData.fullScore?.lastBallOfOver;
-    const overNumber = runTicket.over_number || 0;
+    const overNumber = _lastBall?.nextBallNumber == 1  ? runTicket.over_number+1 : runTicket.over_number || 0;
     const batsmanOnStrike = runTicket.on_strike;
     const ballNumber = _lastBall?.nextBallNumber || 1;
     /** LOGIC FOR WICKET WRITING HERE ONLY FOR NOW START */
@@ -150,16 +173,33 @@ const Runs = () => {
     }
 
 
+		let extraByeorLegBye = 0;
+		if (runTicket.extra_type == "leg-bye" || runTicket.extra_type == "bye") {
+      extraByeorLegBye = runsClicked;
+      // runTicket['extras'] = runsClicked
+    }
+
+
+		let appealObj = {
+			appeal_by:appealSlice?.appeal_by || -1,
+			appeal_result:appealSlice?.appeal_result|| -1,
+			appeal_type:appealSlice?.appeal_type || -1,
+			appeal_umpire_end:appealSlice?.appeal_umpire_end || -1,
+		}
     let json: any = {
       localId: 0,
       over: overNumber,
       over_number: overNumber || 0,
       ball_number: ballNumber,
-      runs: runsClicked,
+      runs:
+        runTicket.extra_type == "leg-bye" || runTicket.extra_type == "bye"
+          ? 0
+          : runsClicked,
       ball_number_included_extra: _lastBall?.ball_number_included_extra,
       extra_type: runTicket?.extra_type || "",
       nextBallNumber: ballNumber,
-      extras: runTicket.extras,
+      extras:
+        Number(extraByeorLegBye) > 0 ? extraByeorLegBye : runTicket.extras,
       is_out: out_method.toString(),
       out_by: 0,
       user_id: "123",
@@ -180,16 +220,18 @@ const Runs = () => {
       inning_number: inning_number,
       bowling_length: 0,
       non_striker_out: 0,
+			...appealObj,
       videoURL: "",
       isUndo: true,
       overMeta: {
-        overNumber: 1,
-        ballNumber: 1,
-        isOverEnd: false,
+        overNumber: overNumber || 0,
+        ballNumber: ballNumber,
+        isOverEnd: ballNumber == 6 ? true : false,
       },
       videourl: selfRecordBall,
     };
 
+		console.log(json,"APPLE")
     /**
      * SAVE WICKET IT ANY
      */
@@ -200,6 +242,7 @@ const Runs = () => {
         method: "post",
       })
         .then(() => {
+					extraByeorLegBye = 0
           // dispacth(resetBatsman());
           // dispacth(resetBowler());
           // dispacth(resetOutMethod());
@@ -260,7 +303,8 @@ const Runs = () => {
         console.log(e);
       });
     }
-
+		console.log("AOOKE,APPLE")
+		dispacth(resetAppeal());
     let fetchScoreApi = await Axios.request({
       url: "/api/ballByBall",
       method: "post",
@@ -275,6 +319,7 @@ const Runs = () => {
     }
 
     dispacth(emptyExtras());
+
     dispacth(setLoadingFalse());
     await Promise.all([dispacth(emptyExtras())])
       .then((e) => {
@@ -317,12 +362,12 @@ const Runs = () => {
 		// const ball_number
 		// const extra_count
 
-		const ballNumber = scoreBallByBallData.fullScore?.lastBallOfOver?.nextBallNumber;
-		const overNumber = scoreBallByBallData.fullScore?.currentOver?.length;
+		const ballNumber = scoreBallByBallData.fullScore?.lastBallOfOver?.nextBallNumber || 1;
+		const overNumber = Math.floor(Number(scoreBallByBallData.fullScore?.totalOvers));
 		const currentTime = moment().format('hhmmss');
 		// /sendEvent?BallNo=BallNo=${match_id}_${inning_id}_${inning_number}_${over}_${over_number}_${ball_id}_${ball_number}_${extra_count}`
 		// ${matchID}_${inningId}_${inningNumber}_${dateOfMatch}_${overNumber}_${ball_id}_${ballNumber || 1 }`
-		const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}_${currentTime}_${inningNumber}_${dateOfMatch}_${overNumber}_${ball_id}_${ballNumber || 1 }_0`;
+		const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}_${currentTime}_${inningNumber}_${dateOfMatch}_${overNumber}_${ball_id}_${ballNumber}_0`;
 		setSelfRecordBall(recordBallUrl);
 		message.success("Ball Recorded");
 		Axios.request({
@@ -341,7 +386,7 @@ const Runs = () => {
 	}
 
   return (
-    <div>
+    <div >
       <Button.Group key={"ButtonGroup"}>
         <div className=" justify-start  gap-1 border border-1">
           <div className="grid grid-cols-3 justify-start  gap-1 border border-1">
@@ -441,10 +486,10 @@ const Runs = () => {
 
         {isSaveButtonEnabled && (
           <Button
-            onClick={() => submitBallByBall()}
+            onClick={(e) => submitBallByBall(e)}
             className={`flex-1 ${"bg-green-600"} text-white  text-center items-center p-10 text-xl font-extrabold uppercase`}
           >
-            Save
+            Savesss
           </Button>
         )}
         <Wicket />

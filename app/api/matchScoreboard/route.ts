@@ -14,7 +14,6 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const matchId = searchParams.get("matchId");
 	const inningNumber =  searchParams.get('inning')
-	console.log("APPLE IS GREEN",inningNumber)
   if (!matchId) {
     return NextResponse.json({
       status: false,
@@ -43,23 +42,26 @@ export async function GET(req: Request) {
 	const currentOverFile = `${currentInningPath}/over/${0}.json`;
   // let getInitialFileName = `${folderName}/matchScoreboardInitial.json`; // only update from the server response
   let getUpdatedFileName = `${folderName}/matchScoreboardUpdated.json`; // update by localResponse As Well
-
+	let savedData:any = null;
 	try {
-		let savedData =await readFileSync(currentInningPath,'utf-8');
-		if(savedData){
-			return NextResponse.json(JSON.parse(savedData));
-		}
+		savedData =  await fsPromises.readFile(getFileName, "utf-8");
+		// if (savedData) return NextResponse.json(JSON.parse(savedData));
 	} catch (error) {
 		console.log(error);
 	}
 
-	let data = await fetch(
-    `https://hpca.v6world.com/api/v1/fullscoreboard?match_id=${matchId}`,
-    requestOptions
-  )
-    .then((response) => response.text())
-    .then((result) => result)
-    .catch((error) => console.log("error", error));
+	if (savedData == null) {
+    savedData = await fetch(
+      `https://hpca.v6world.com/api/v1/fullscoreboard?match_id=${matchId}`,
+      requestOptions
+    )
+      .then((response) => response.text())
+      .then((result) => result)
+      .catch((error) => console.log("error", error));
+
+
+  }
+
 
   try {
 		console.log(folderName,"FOLDER NAME")
@@ -93,9 +95,9 @@ try {
 console.log('EROOR', error);
 }
 
-  if (data) {
-    fsPromises.writeFile(getFileName, JSON.stringify(data), "utf-8");
-    fsPromises.writeFile(getUpdatedFileName, data, "utf-8");
-    return NextResponse.json(JSON.parse(data));
+  if (savedData) {
+    fsPromises.writeFile(getFileName, savedData, "utf-8");
+    fsPromises.writeFile(getUpdatedFileName, savedData, "utf-8");
+    return NextResponse.json(JSON.parse(savedData));
   } else return NextResponse.json({});
 }

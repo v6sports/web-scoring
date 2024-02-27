@@ -33,6 +33,7 @@ const ScoreboardPage = ({ params }: { params: { slug: string } }) => {
 		if(filterFromDropdown === 'wickets') setFilteredData(fetchDataFromApi.filter((e:any)=> e.is_out != -1))
 		if(filterFromDropdown === 'fours') setFilteredData(fetchDataFromApi.filter((e:any)=> e.runs === 4))
 		if(filterFromDropdown === 'sixes') setFilteredData(fetchDataFromApi.filter((e:any)=> e.runs === 6))
+		if(filterFromDropdown === 'appeals') setFilteredData(fetchDataFromApi.filter((e:any)=> e.appeal_type !== -1))
 		if(filterFromDropdown === 'clear') setFilteredData(fetchDataFromApi);
 	},[filterFromDropdown])
 
@@ -115,6 +116,7 @@ const ScoreboardPage = ({ params }: { params: { slug: string } }) => {
           <Select.Option key={"wickets"}>Wickets</Select.Option>
           <Select.Option key={"fours"}>4's</Select.Option>
           <Select.Option key={"sixes"}>6's</Select.Option>
+					<Select.Option key={"appeals"}>Appeals</Select.Option>
 					<Select.Option key={"clear"}>Clear</Select.Option>
         </Select>
       </div>
@@ -132,7 +134,7 @@ const ScoreboardPage = ({ params }: { params: { slug: string } }) => {
         <tbody>
           {filteredData.map((item: any) => {
             return (
-              <tr key={item.localId}>
+              <tr key={item.localId} className={item?.is_out != -1 ? "bg-red-700 text-white rounded-md" :''}>
                 <td className="border px-4 py-2">
                   {item?.over}.{item.ball_number}
                 </td>
@@ -150,7 +152,7 @@ const ScoreboardPage = ({ params }: { params: { slug: string } }) => {
                       }.mp4`
                     : ""}
                 </td>
-                <td>{item?.is_out}</td>
+                <td>{item?.is_out == -1 ? "-" : item?.is_out}</td>
                 {/* Add more cells based on your data */}
               </tr>
             );

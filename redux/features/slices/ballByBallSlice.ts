@@ -2,7 +2,7 @@ import { IballByBall } from "@/app/interfaces/ballByBall.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: any = {
-  assist_by: -1,
+  assist_by: -1
 };
 export const ballByBallSlice = createSlice({
   name: "match",
@@ -86,6 +86,11 @@ export const {
   updateExtras,
   updateBolwingLength,
   updateBatterShot,
+  setAppealType,
+  setAppealBy,
+  setAppealResult,
+	setAppealUmpireEnd,
+  resetAppeal,
   setBatterOnStrike,
   setBatterNonStrike,
   setBowlerOnAttack,

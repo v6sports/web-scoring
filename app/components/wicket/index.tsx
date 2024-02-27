@@ -134,10 +134,12 @@ useEffect(() => {
   return (
     <div className="flex">
       <Modal
-        title="Basic Modal"
+        title="Wicket"
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+				okButtonProps={{hidden:true}}
+
       >
         <Button.Group className="grid grid-cols-3 gap-1">
           {allWickets.map((wicket) => {

@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/redux/store";
-import { Tooltip } from "antd";
+import { Button, Tooltip } from "antd";
 import React, { useEffect } from "react";
 
 const CurrentOver = () => {
@@ -72,12 +72,14 @@ const CurrentOver = () => {
                 className={`rounded-sm ${circleColor} w-7 h-7 text-center items-center justify-center flex text-xs font-extrabold`}
               >
 								<Tooltip  title={completeMessage || `${ball.run || '0'} run scored`}>
-                {ball.run || '0'}{circileSuffix}
+                {(ball.run || ball?.extras || 0) < 0 ? 0 : (ball.run || ball?.extras || 0) }{circileSuffix}
 								</Tooltip>
               </code>
             );
           })}
       </div>
+
+
     </div>
   );
 };

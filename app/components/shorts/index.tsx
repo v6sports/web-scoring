@@ -86,12 +86,22 @@ const options = [
   { label: "Back Foot", value: "back" },
 ];
 const BatterShots = () => {
+
+	const captureShotPlaced = (e:any) => {
+		console.log(e.target.value)
+		// batting_type
+	}
+	const captureShotType = (e:any) => {
+		console.log(e.target.value)
+		// batting_style
+	}
   return (
     <div className="gap-2">
-      <Form name="batsmanShot">
+      <Form  name="batsmanShot">
         <Form.Item name={"shotPlayedType"}>
           <Radio.Group
             options={options}
+						onChange={captureShotPlaced}
             optionType="button"
             className="flex flex-1 justify-left"
             size="small"
@@ -100,7 +110,8 @@ const BatterShots = () => {
         </Form.Item>
         <Form.Item name={"shotType"}>
           <Radio.Group
-            options={batterShotsArray}
+					onChange={captureShotType}
+						options={batterShotsArray}
             className="grid grid-cols-3 sm:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 md:grid-cols-2"
             optionType="button"
             size="small"

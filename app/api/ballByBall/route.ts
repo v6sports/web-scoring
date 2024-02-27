@@ -56,10 +56,10 @@ export async function POST(req: Request) {
   /**TO OVER MAGIC START */
   if (!fs.existsSync(currentOverFolder)) {
     const createFile = await fsPrmoise.mkdir(currentOverFolder).catch((e) => {
-      console.log("%croute.ts line:55 e", "color: #007acc;", e);
+
     });
     await fsPrmoise.writeFile(currentOverFile, "[]", "utf-8").catch((e) => {
-      console.log("%croute.ts line:58 e", "color: #007acc;", e);
+
     });
   }
 

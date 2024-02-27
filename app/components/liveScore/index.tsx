@@ -1,24 +1,32 @@
 import getPlayers from "@/app/Utils/playersUtils";
 import { fetchScoreApi, inningsRunRate } from "@/app/Utils/utils";
 import { useAppSelector } from "@/redux/store";
-import { Collapse } from "antd";
+import { Button, Collapse } from "antd";
 import React, { useEffect } from "react";
 import Extras from "../extras";
 
 const LiveScore = () => {
-	const selector:any = useAppSelector((state) => state.matchSliceReducer);
-
-	const [battingTeamNameInInnings, setBattingTeamNameInInnings] =
+  const selector: any = useAppSelector((state) => state.matchSliceReducer);
+  const [teamsName, setTeamsName] = React.useState<any>({
+    teamOne: "",
+    teamTwo: "",
+  });
+  const [battingTeamNameInInnings, setBattingTeamNameInInnings] =
     React.useState<any>([]);
-	const inningSelector = useAppSelector((state) => state.inningsTrackSlice);
+  const inningSelector = useAppSelector((state) => state.inningsTrackSlice);
   const scoreBallByBallData = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
-	const init = async () => {
-		const inningNumber = inningSelector.inning_number || 0;
-		let maxNumberOfInning = Number(inningNumber);
-		const arrayForTeam = [];
-		for (let i = 0; i <= maxNumberOfInning; i++) {
+  const init = async () => {
+    const inningNumber = inningSelector.inning_number || 0;
+    setTeamsName({
+      teamOne: selector?.match_details?.team_a_new_det?.name || "",
+      teamTwo: selector?.match_details?.team_b_new_det?.name || "",
+    });
+
+    let maxNumberOfInning = Number(inningNumber);
+    const arrayForTeam = [];
+    for (let i = 0; i <= maxNumberOfInning; i++) {
       if (i <= maxNumberOfInning && i > 0) {
         let teamName = getPlayers(
           {
@@ -26,10 +34,13 @@ const LiveScore = () => {
             key: "batting",
             matchData: selector,
           },
-					"Name"
+          "Name"
         );
-        let teamScore:any = await fetchScoreApi(selector.match_id, i.toString());
-				console.log(teamScore)
+        let teamScore: any = await fetchScoreApi(
+          selector.match_id,
+          i.toString()
+        );
+        console.log(teamScore);
         arrayForTeam.push({
           teamName,
           inningNumber: i,
@@ -37,18 +48,31 @@ const LiveScore = () => {
         });
       }
     }
-	setBattingTeamNameInInnings(arrayForTeam);
-}
+    setBattingTeamNameInInnings(arrayForTeam);
+  };
   useEffect(() => {
-	init()
+    init();
   }, []);
-	const fullScoreBoard = scoreBallByBallData.fullScore;
+
+  const selectName = (name: string, inningNumber: number) => {
+
+
+    return name;
+  };
+  const fullScoreBoard = scoreBallByBallData.fullScore;
 
   return (
     <div className="flex flex-col">
       <div className="flex flex-row items-center gap-2">
+        <code className="text-lg font-light">
+          {
+            (selectName(
+              battingTeamNameInInnings[Number(inningSelector.inning_number) - 1]
+                ?.teamName, Number(inningSelector?.inning_number))
+            )
 
-        <code className="text-lg font-light">{battingTeamNameInInnings[Number(inningSelector.inning_number) -1 ]?.teamName}</code>
+          }
+        </code>
         <code className="text-lg font-extrabold">
           {fullScoreBoard?.totalRuns}/{fullScoreBoard?.wickets?.length}
         </code>
@@ -64,16 +88,14 @@ const LiveScore = () => {
         </code>
       </div>
       <Collapse>
-
         <Collapse.Panel header="Scores" key="1" className="bg-green-200">
           {battingTeamNameInInnings?.length > 0 &&
-            battingTeamNameInInnings?.map((e:any) => {
+            battingTeamNameInInnings?.map((e: any,index:number) => {
               let scoreboardFull = e?.scoreBoard?.fullScore;
               return (
                 <div className="flex flex-row items-center gap-2">
-
                   <code className="text-xs font-extrabold">
-                    {e.teamName ||  ""}
+                    {"Inning "+(index+1)+" "}-
                   </code>
                   <code className="text-xs font-extrabold">
                     {scoreboardFull?.totalRuns || 0}/
