@@ -7,7 +7,7 @@ import { Button, Image, Radio } from "antd";
 import { url } from "inspector";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { resetAppeal, updateExtras } from "@/redux/features/slices/ballByBallSlice";
+import {  updateExtras } from "@/redux/features/slices/ballByBallSlice";
 import CustomModal from "../modal";
 import Appeal from "../appeal";
 

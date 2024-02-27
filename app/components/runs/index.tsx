@@ -85,8 +85,10 @@ const Runs = () => {
 		e.preventDefault();
 		e.stopPropagation();
 		try {
+			//@ts-ignore
 			let previiousBall = scoreBallByBallData.fullScore?.currentOver[scoreBallByBallData.fullScore?.currentOver?.length -1] || -1;
 			const currentTime = moment();
+			//@ts-ignore
 			const providedTime = moment(previiousBall?.currentTimeStamp, 'HH:mm:ss');
 			const timeGap = providedTime.diff(currentTime);
 			if (moment.duration(timeGap).seconds() > 58) {
