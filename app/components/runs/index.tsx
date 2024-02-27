@@ -491,7 +491,7 @@ const Runs = () => {
             onClick={(e) => submitBallByBall(e)}
             className={`flex-1 ${"bg-green-600"} text-white  text-center items-center p-10 text-xl font-extrabold uppercase`}
           >
-            Savesss
+            Save
           </Button>
         )}
         <Wicket />
