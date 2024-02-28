@@ -18,22 +18,22 @@ const getPlayers = (props: IwhichTeamPlayers,teamName:any=null) => {
   let selectedPlayers: Player[] = [];
   // allPlayerListTeamB.players;
 
-  if (currentInnings === 1 || currentInnings === 3) {
-    if (key === "batting") {
+  if (currentInnings == 1 || currentInnings == 3) {
+    if (key == "batting") {
 			if(teamName)  return allPlayerListTeamA?.name
       return allPlayerListTeamA?.players;
     }
-    if (key === "bowling") {
+    if (key == "bowling") {
 			if(teamName)  return allPlayerListTeamB?.name
       return allPlayerListTeamB?.players;
     }
   }
-  if (currentInnings === 2 || currentInnings === 4) {
-    if (key === "batting") {
+  if (currentInnings == 2 || currentInnings == 4) {
+    if (key == "batting") {
 			if(teamName)  return allPlayerListTeamB?.name
 		  return allPlayerListTeamB?.players;
     }
-    if (key === "bowling") {
+    if (key ==="bowling") {
 			if(teamName)  return allPlayerListTeamA?.name
       return allPlayerListTeamA?.players;
     }

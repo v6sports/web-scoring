@@ -19,7 +19,7 @@ const Players = () => {
     if (inningNumber > 0) {
       const bowlingTeam: any = getPlayers({
         //@ts-ignore
-        currentInnings: 2,
+        currentInnings: inningNumber,
         key: "bowling",
         matchData: selector,
       });
@@ -35,7 +35,7 @@ const Players = () => {
     if (player.player_id) {
       dispatch(setFielder(player?.player_id));
       setSelectFielder(player);
-      console.log(player);
+
     }
   };
   return (
