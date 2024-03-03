@@ -248,6 +248,7 @@ const Bolwer = () => {
       <CustomModal
         visible={ballByBallResponse.on_attack == -1 ? true : false}
         hide={() => console.log("Hide")}
+				closeDisable={true}
         children={
           <div >
             <h1 className="uppercase font-extrabold text-sm text-center">Select Bolwer</h1>

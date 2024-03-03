@@ -92,43 +92,7 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({ imageUrl, width }) => {
           <p className="text-left text-xs font-light">Short</p>
         </div>
       </div>
-      <Radio.Group
-        style={{ top: 615, position: "absolute", marginLeft: 8 }}
-        onChange={selectExtra}
-        optionType="button"
-        size="small"
-        buttonStyle={"solid"}
-        options={[
-          {
-            label: "WD",
-            value: "wide",
-          },
-          {
-            label: "NB",
-            value: "no-ball",
-          },
-          {
-            label: "LB",
-            value: "leg-bye",
-          },
-          {
-            label: "B",
-            value: "bye",
-          },
-        ]}
-      />
-      <Button
-        className="bg-orange"
-        onClick={() => setShowModalForAppeal(true)}
-        style={{ position: "absolute", top: 650, left: 8 }}
-      >
-        Appeal
-      </Button>
-      <CustomModal
-        children={<Appeal />}
-        hide={hideModal}
-        visible={showModalForAppeal}
-      ></CustomModal>
+
     </div>
   );
 };

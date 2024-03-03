@@ -140,6 +140,7 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
                     </div>
                   </div>
                 </div>
+
                 <div className="flex flex-col  w-fit ">
                   <div className="w-full  shadow-lg rounded-lg">
                     <Batsman />
@@ -147,7 +148,7 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
                   </div>
                   <div className="w-fit   bg-slate-100 ">
                     <div className="w-fit shadow-lg rounded-lg">
-                      <div className="w-fit min-h-48  overflow-y-hidden bg-red-200 w-full">
+                      <div className="min-h-48  overflow-y-hidden bg-red-50 w-full">
                         <code className="font-bold">Bowling Length</code>
                         <BallLength />
                       </div>
@@ -160,15 +161,21 @@ const Scorebard = ({ params }: { params: { slug: string } }) => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col  gap-1 ">
+              <div className="flex flex-col  w-[360px] ">
                 <LiveScore />
                 {/* <Extras /> */}
-                <CurrentOver />
-                <PreviousOver />
+                <div className="border  rounded-lg p-1 m-1 flex flex-col gap-1">
+                  <CurrentOver />
+                  <PreviousOver />
+                </div>
                 <Runs />
               </div>
               <div className="flex flex-col  w-fit ">
-                <EditBalls refetchParent={refetchParent} matchId={matchId} currentInning={inningNumber} />
+                <EditBalls
+                  refetchParent={refetchParent}
+                  matchId={matchId}
+                  currentInning={inningNumber}
+                />
               </div>
             </div>
           </React.Suspense>

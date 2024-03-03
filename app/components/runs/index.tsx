@@ -7,7 +7,7 @@ import {
 } from "@/redux/features/slices/ballByBallSlice";
 import { setScoreBallByBall } from "@/redux/features/slices/scoreBallByBallSlice";
 import { AppDispatch, store, useAppSelector } from "@/redux/store";
-import { Button, Input, InputNumber, message } from "antd";
+import { Button, Image, Input, InputNumber, message } from "antd";
 import Axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
@@ -27,20 +27,20 @@ import {
   setLodingTrue,
 } from "@/redux/features/slices/scoreboardProgressSlice";
 import { resetAppeal } from "@/redux/features/slices/appealSlice";
+import AppealExtras from "../appealExtras";
 
 const Runs = () => {
   const [selectedButton, setSelectedButton] = useState<string | number | null>(
     null
   );
   const [isSaveButtonEnabled, setSaveButtonEnabled] = useState(false);
-	const [disableSelfRecord, setDisableSelfRecord] = useState(false);
-	const [selfRecordBall, setSelfRecordBall] = useState('');
+  const [disableSelfRecord, setDisableSelfRecord] = useState(false);
+  const [selfRecordBall, setSelfRecordBall] = useState("");
   const dispacth = useDispatch<AppDispatch>();
-	const [lastClickTime, setLastClickTime] = useState(0);
+  const [lastClickTime, setLastClickTime] = useState(0);
   const wicketSelecor = useAppSelector((state) => state.inningsTrackSlice);
 
-
-	const appealSlice = useAppSelector((state) => state.appealSlice);
+  const appealSlice = useAppSelector((state) => state.appealSlice);
   const scoreBallByBallData = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
@@ -81,29 +81,29 @@ const Runs = () => {
   useEffect(() => {
     isSaveEnabled();
   }, [JSON.stringify(runTicket)]);
-  const submitBallByBall = async (e:any) => {
-		e.preventDefault();
-		e.stopPropagation();
-		try {
-			//@ts-ignore
-			let previiousBall = scoreBallByBallData.fullScore?.currentOver[scoreBallByBallData.fullScore?.currentOver?.length -1] || -1;
-			const currentTime = moment();
-			//@ts-ignore
-			const providedTime = moment(previiousBall?.currentTimeStamp, 'HH:mm:ss');
-			const timeGap = providedTime.diff(currentTime);
-			if (moment.duration(timeGap).seconds() > 58) {
+  const submitBallByBall = async (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      //@ts-ignore
+      let previiousBall =scoreBallByBallData.fullScore?.currentOver[scoreBallByBallData.fullScore?.currentOver?.length - 1] || -1;
+      const currentTime = moment();
+      //@ts-ignore
+      const providedTime = moment(previiousBall?.currentTimeStamp, "HH:mm:ss");
+      const timeGap = providedTime.diff(currentTime);
+      if (moment.duration(timeGap).seconds() > 58) {
         message.destroy();
         message.error("Please wait 2 seconds before saving another ball");
         return;
       }
-			// if (previiousBall?.currentTimeStamp.diff(moment(), "seconds") < 10) {
+      // if (previiousBall?.currentTimeStamp.diff(moment(), "seconds") < 10) {
       //   message.error("Please wait 10 seconds before saving another ball");
       //   return;
       // }
-		} catch (error) {
-			console.log(error,":ERROR")
-		}
-		// return;
+    } catch (error) {
+      console.log(error, ":ERROR");
+    }
+    // return;
     if (runTicket.on_attack === -1) {
       message.destroy();
       message.error("Please select a bowler");
@@ -124,14 +124,17 @@ const Runs = () => {
     message.loading("Please wait");
     dispacth(setLodingTrue());
     let _lastBall = scoreBallByBallData.fullScore?.lastBallOfOver;
-    const overNumber = _lastBall?.nextBallNumber == 1  ? runTicket.over_number+1 : runTicket.over_number || 0;
+    const overNumber =
+      _lastBall?.nextBallNumber == 1
+        ? runTicket.over_number + 1
+        : runTicket.over_number || 0;
     const batsmanOnStrike = runTicket.on_strike;
     const ballNumber = _lastBall?.nextBallNumber || 1;
     /** LOGIC FOR WICKET WRITING HERE ONLY FOR NOW START */
     /**
      * Wicket will only get saved if out_method is not -1
      */
-
+		let whoIsOut = runTicket?.on_strike;
     if (
       runTicket.on_strike &&
       runTicket.on_attack &&
@@ -170,24 +173,25 @@ const Runs = () => {
       inning_number,
       match_id,
     } = wicketSelecor;
+
     if (out_method == -1) {
       batsman_player_id = -1;
     }
 
-
-		let extraByeorLegBye = 0;
-		if (runTicket.extra_type == "leg-bye" || runTicket.extra_type == "bye") {
+    let extraByeorLegBye = 0;
+    if (runTicket.extra_type == "leg-bye" || runTicket.extra_type == "bye") {
       extraByeorLegBye = runsClicked;
       // runTicket['extras'] = runsClicked
     }
 
+    let appealObj = {
+      appeal_by: appealSlice?.appeal_by || -1,
+      appeal_result: appealSlice?.appeal_result || -1,
+      appeal_type: appealSlice?.appeal_type || -1,
+      appeal_umpire_end: appealSlice?.appeal_umpire_end || -1,
+    };
 
-		let appealObj = {
-			appeal_by:appealSlice?.appeal_by || -1,
-			appeal_result:appealSlice?.appeal_result|| -1,
-			appeal_type:appealSlice?.appeal_type || -1,
-			appeal_umpire_end:appealSlice?.appeal_umpire_end || -1,
-		}
+
     let json: any = {
       localId: 0,
       over: overNumber,
@@ -205,7 +209,7 @@ const Runs = () => {
       is_out: out_method.toString(),
       out_by: 0,
       user_id: "123",
-      who_out: 0,
+      who_out: whoIsOut,
       boundary: isBoundry,
       match_id: match_id.toString(),
       assist_by: fielder_player_id.toString(),
@@ -222,7 +226,7 @@ const Runs = () => {
       inning_number: inning_number,
       bowling_length: 0,
       non_striker_out: 0,
-			...appealObj,
+      ...appealObj,
       videoURL: "",
       isUndo: true,
       overMeta: {
@@ -233,7 +237,7 @@ const Runs = () => {
       videourl: selfRecordBall,
     };
 
-		console.log(json,"APPLE")
+    // console.log(json, "APPLE");
     /**
      * SAVE WICKET IT ANY
      */
@@ -244,7 +248,8 @@ const Runs = () => {
         method: "post",
       })
         .then(() => {
-					extraByeorLegBye = 0
+          extraByeorLegBye = 0;
+					whoIsOut=0;
           // dispacth(resetBatsman());
           // dispacth(resetBowler());
           // dispacth(resetOutMethod());
@@ -305,8 +310,7 @@ const Runs = () => {
         console.log(e);
       });
     }
-		console.log("AOOKE,APPLE")
-		dispacth(resetAppeal());
+    dispacth(resetAppeal());
     let fetchScoreApi = await Axios.request({
       url: "/api/ballByBall",
       method: "post",
@@ -350,156 +354,180 @@ const Runs = () => {
     e.preventDefault();
   };
 
-	const recordBall = () => {
-		const localIP = "localhost";
-		const batsmanOnStrike = runTicket.on_strike;
-		const matchID = wicketSelecor.match_id;
-		// const inningId = moment().format("hh:mm:ss");  //wicketSelecor?.inning_id; // replace by timeToday in form of 1451
-		const inningNumber = wicketSelecor.inning_number;
-		const dateOfMatch= moment().format('DDMM') // date in form of DDMM
-		const ball_id = batsmanOnStrike
+  const recordBall = () => {
+    const localIP = "localhost";
+    const batsmanOnStrike = runTicket.on_strike;
+    const matchID = wicketSelecor.match_id;
+    // const inningId = moment().format("hh:mm:ss");  //wicketSelecor?.inning_id; // replace by timeToday in form of 1451
+    const inningNumber = wicketSelecor.inning_number;
+    const dateOfMatch = moment().format("DDMM"); // date in form of DDMM
+    const ball_id = batsmanOnStrike;
 
-		// const over_number
-		// const ball_id
-		// const ball_number
-		// const extra_count
+    // const over_number
+    // const ball_id
+    // const ball_number
+    // const extra_count
 
-		const ballNumber = scoreBallByBallData.fullScore?.lastBallOfOver?.nextBallNumber || 1;
-		const localId = scoreBallByBallData?.fullScore?.lastBallOfOver?.localId || 0;
-		const overNumber = Math.floor(Number(scoreBallByBallData.fullScore?.totalOvers))+1;
-		const currentTime = moment().format('hhmmss');
-		// /sendEvent?BallNo=BallNo=${match_id}_${inning_id}_${inning_number}_${over}_${over_number}_${ball_id}_${ball_number}_${extra_count}`
-		// ${matchID}_${inningId}_${inningNumber}_${dateOfMatch}_${overNumber}_${ball_id}_${ballNumber || 1 }`
-		const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}_${dateOfMatch}_${inningNumber}_${currentTime}_${overNumber}_${ball_id}_${ballNumber}_${localId}`;
-		setSelfRecordBall(recordBallUrl);
-		message.success("Ball Recorded");
-		Axios.request({
+    const ballNumber =
+      scoreBallByBallData.fullScore?.lastBallOfOver?.nextBallNumber || 1;
+    const localId =
+      scoreBallByBallData?.fullScore?.lastBallOfOver?.localId || 0;
+    const overNumber =
+      Math.floor(Number(scoreBallByBallData.fullScore?.totalOvers)) + 1;
+    const currentTime = moment().format("hhmmss");
+    // /sendEvent?BallNo=BallNo=${match_id}_${inning_id}_${inning_number}_${over}_${over_number}_${ball_id}_${ball_number}_${extra_count}`
+    // ${matchID}_${inningId}_${inningNumber}_${dateOfMatch}_${overNumber}_${ball_id}_${ballNumber || 1 }`
+    const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}_${dateOfMatch}_${inningNumber}_${currentTime}_${overNumber}_${ball_id}_${ballNumber}_${localId}`;
+    setSelfRecordBall(recordBallUrl);
+    message.success("Ball Recorded");
+    Axios.request({
       method: "post",
       baseURL: `http://${localIP}:3000`,
       url: recordBallUrl,
     }).catch((e) => {
       console.log(e, "ERROR");
     });
-		setDisableSelfRecord(true);
-		setTimeout(() => {
-			setDisableSelfRecord(false);
-		}, 2000);
-
-
-	}
+    setDisableSelfRecord(true);
+    setTimeout(() => {
+      setDisableSelfRecord(false);
+    }, 2000);
+  };
 
   return (
-    <div >
-      <Button.Group key={"ButtonGroup"}>
-        <div className=" justify-start  gap-1 border border-1">
-          <div className="grid grid-cols-3 justify-start  gap-1 border border-1">
-            <Button
-              key={"Value-1"}
-              className={`flex ${
-                selectedButton === 1 ? "bg-danger" : " primary-btn"
-              } text-white  text-center items-center p-10 text-lg font-extrabold`}
-              onClick={() => handleButtonClick("1")}
-            >
-              1
-            </Button>
-            <Button
-              key={"Value-2"}
-              className={`flex ${
-                selectedButton === 2 ? "bg-danger" : " primary-btn"
-              } text-white  text-center items-center p-10 text-lg font-extrabold`}
-              onClick={() => handleButtonClick("2")}
-            >
-              2
-            </Button>
-            <Button
-              key={"Value-3"}
-              className={`flex ${
-                selectedButton === 3 ? "bg-danger" : " primary-btn"
-              } text-white  text-center items-center p-10 text-lg font-extrabold`}
-              onClick={() => handleButtonClick("3")}
-            >
-              3
-            </Button>
-          </div>
-          <div className="grid grid-cols-3 justify-start  gap-1 border border-1">
-            <Button
-              key={"Value-4"}
-              className={`flex ${
-                selectedButton === 4 ? "bg-danger" : " primary-btn"
-              } text-white  text-center items-center p-10 text-lg font-extrabold`}
-              onClick={() => handleButtonClick("4")}
-            >
-              4
-            </Button>
-            <Button
-              key={"Value-5"}
-              className={`flex ${
-                selectedButton === 5 ? "bg-danger" : " primary-btn"
-              } text-white  text-center items-center p-10 text-lg font-extrabold`}
-              onClick={() => handleButtonClick("5")}
-            >
-              5
-            </Button>
-            <Button
-              key={"Value-6"}
-              className={`flex ${
-                selectedButton === 6 ? "bg-danger" : " primary-btn"
-              } text-white  text-center items-center p-10 text-lg font-extrabold`}
-              onClick={() => handleButtonClick("6")}
-            >
-              6
-            </Button>
-          </div>
-        </div>
-      </Button.Group>
-      <div className="flex flex-1"></div>
-      <div className="flex flex-row gap-4 mt-2">
+    isSaveButtonEnabled && <div>
+			<div className="flex flex-row gap-4 mt-4 justify-center">
         <Button
-          key={"Value-44"}
-          className={`flex-1 ${
-            selectedButton == 44 ? "bg-danger" : " bg-yellow-200 text-black"
-          }   text-center items-center p-10 text-lg font-extrabold`}
-          onClick={() => handleButtonClick("44")}
-        >
-          4B
-        </Button>
-        <Button
-          key={"Value-66"}
-          className={`flex-1 ${
-            selectedButton == 66 ? "bg-danger" : " bg-yellow-500"
-          } text-black  text-center items-center p-10 text-lg font-extrabold`}
-          onClick={() => handleButtonClick("66")}
-        >
-          6B
-        </Button>
-      </div>
-      <div className="flex flex-row gap-4 mt-4">
-        {selectedButton === null ? (
-          <Input
-            className="flex-1 w-20 h-20 text-2xl font-extrabold text-center justify-center items-center"
-            minLength={0}
-            onWheel={handleWheel}
-            maxLength={1}
-            inputMode="numeric"
-            placeholder="#"
-          />
-        ) : (
-          ""
-        )}
+          onClick={recordBall}
+          disabled={disableSelfRecord}
+          className="bg-green-800 h-10 text-white"
 
-        {isSaveButtonEnabled && (
-          <Button
-            onClick={(e) => submitBallByBall(e)}
-            className={`flex-1 ${"bg-green-600"} text-white  text-center items-center p-10 text-xl font-extrabold uppercase`}
-          >
-            Save
-          </Button>
-        )}
-        <Wicket />
+        >
+          <div className="flex flex-row justify-start w-[160px]">
+            <Image
+              width={25}
+              preview={false}
+              className="w-28 h-28 rounded  "
+              src={`/rec-button.png`}
+            />
+						<p className="ml-2 uppercase">Record Ball</p>
+          </div>
+        </Button>
       </div>
-			<div className="flex flex-row gap-4 mt-4">
-			<Button onClick={recordBall} disabled={disableSelfRecord}  className="bg-red-900 h-14 text-white" block> Record Ball</Button>
+			<AppealExtras />
+			<div className="flex flex-col m-2 w-[340px] border rounded justify-center items-center pb-1">
+			<p className="text-red-600 uppercase text-sm font-bold text-center">
+        Runs Scored
+      </p>
+			<hr className=" w-full mb-2" />
+				<Button.Group key={"ButtonGroup"}>
+					<div className=" justify-start  gap-1 border border-1">
+						<div className="grid grid-cols-6 justify-start  gap-1 ">
+							<Button
+								key={"Value-1"}
+								className={`flex ${
+									selectedButton === 1 ? "bg-danger" : " primary-btn"
+								} text-white  text-center items-center p-4 text-lg font-extrabold`}
+								onClick={() => handleButtonClick("1")}
+							>
+								1
+							</Button>
+							<Button
+								key={"Value-2"}
+								className={`flex ${
+									selectedButton === 2 ? "bg-danger" : " primary-btn"
+								} text-white  text-center items-center p-4 text-lg font-extrabold`}
+								onClick={() => handleButtonClick("2")}
+							>
+								2
+							</Button>
+							<Button
+								key={"Value-3"}
+								className={`flex ${
+									selectedButton === 3 ? "bg-danger" : " primary-btn"
+								} text-white  text-center items-center p-4 text-lg font-extrabold`}
+								onClick={() => handleButtonClick("3")}
+							>
+								3
+							</Button>
+
+							<Button
+								key={"Value-4"}
+								className={`flex ${
+									selectedButton === 4 ? "bg-danger" : " primary-btn"
+								} text-white  text-center items-center p-4 text-lg font-extrabold`}
+								onClick={() => handleButtonClick("4")}
+							>
+								4
+							</Button>
+							<Button
+								key={"Value-5"}
+								className={`flex ${
+									selectedButton === 5 ? "bg-danger" : " primary-btn"
+								} text-white  text-center items-center p-4 text-lg font-extrabold`}
+								onClick={() => handleButtonClick("5")}
+							>
+								5
+							</Button>
+							<Button
+								key={"Value-6"}
+								className={`flex ${
+									selectedButton === 6 ? "bg-danger" : " primary-btn"
+								} text-white  text-center items-center p-4 text-lg font-extrabold`}
+								onClick={() => handleButtonClick("6")}
+							>
+								6
+							</Button>
+						</div>
+					</div>
+				</Button.Group>
+				<Button.Group key="save&wicket">
+					<div className="flex flex-row mt-2 gap-2">
+						<Button
+							key={"Value-44"}
+							className={`flex ${
+								selectedButton == 44 ? "bg-danger" : " bg-yellow-200 text-black"
+							}   text-center items-center p-6 text-lg font-extrabold`}
+							onClick={() => handleButtonClick("44")}
+						>
+							4B
+						</Button>
+						<Button
+							key={"Value-66"}
+							className={`flex ${
+								selectedButton == 66 ? "bg-danger" : " bg-yellow-500"
+							} text-black  text-center items-center p-6 text-lg font-extrabold`}
+							onClick={() => handleButtonClick("66")}
+						>
+							6B
+						</Button>
+						{selectedButton === null ? (
+						<Input
+							className=" w-10 h-12  font-extrabold text-center justify-center items-center"
+							minLength={0}
+							onWheel={handleWheel}
+							maxLength={1}
+							inputMode="numeric"
+							placeholder="#"
+						/>
+					) : (
+						""
+					)}
+
+					</div>
+				</Button.Group>
+				<div className="flex flex-row gap-4 mt-4">
+					{isSaveButtonEnabled && (
+						<Button
+							onClick={(e) => submitBallByBall(e)}
+							className={`flex ${"bg-green-600"} text-white  text-center items-center p-6 text-xl font-extrabold uppercase`}
+						>
+							Save
+						</Button>
+					)}
+					<Wicket />
+				</div>
 			</div>
+
     </div>
   );
 };

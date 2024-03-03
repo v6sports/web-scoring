@@ -1,60 +1,58 @@
-import { Button, Modal, Tooltip } from "antd";
+import { Button, Image, Modal, Tooltip } from "antd";
 import React, { useEffect, useState } from "react";
 import Players from "../players";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { resetFielder, resetOutMethod, setOutMethod } from "@/redux/features/slices/inningsTrackSlice";
+import CustomModal from "../modal";
 
 const allWickets = [
   {
     key: "bowled",
     label: "Bowled",
+		icon:'bowled.png',
     description:
       "Bowler dismisses the batsman by hitting the stumps with the ball.",
   },
   {
     key: "caught",
     label: "Caught",
+		icon:'catch.png',
     description:
       "Batsman hits the ball, and it is caught by a fielder or wicketkeeper before it touches the ground.",
   },
   {
     key: "lbw",
     label: "LBW",
+		icon:'lbw.png',
     description:
       "Batsman is out leg before wicket, meaning the ball would have hit the stumps but hits the leg first.",
   },
   {
     key: "run_out",
     label: "Run Out",
+		icon:'run-out.png',
+
     description:
       "Batsman is dismissed while attempting a run, and the fielding side successfully breaks the stumps before the batsman reaches the crease.",
   },
   {
     key: "stumped",
     label: "Stumped",
+		icon:'keeper.png',
     description:
       "Batsman is out of the crease, and the wicketkeeper breaks the stumps with the ball in hand.",
   },
   {
     key: "hit_wicket",
     label: "Hit Wicket",
+		icon:'hit_wicket.png',
     description:
       "Batsman hits his own stumps with the bat or any part of his person while the ball is in play.",
   },
   {
-    key: "handled_the_ball",
-    label: "Handled the Ball",
-    description:
-      "Batsman deliberately handles the ball without the permission of the fielding side.",
-  },
-  {
-    key: "obstructing_the_field",
-    label: "Obstructing the Field",
-    description: "Batsman obstructs a fielder while the ball is in play.",
-  },
-  {
     key: "retired_hurt",
+		icon:'retired_out.png',
     label: "Retired Hurt",
     description:
       "Batsman leaves the field due to injury or illness during his innings.",
@@ -62,6 +60,7 @@ const allWickets = [
   {
     key: "timed_out",
     label: "Timed Out",
+		icon:'timed-out.png',
     description:
       "Batsman takes more than a specified time to come out to the field after the fall of the previous wicket.",
   },
@@ -73,24 +72,21 @@ const allWickets = [
   {
     key: "retired_out",
     label: "Retired Out",
+		icon:'retired_out.png',
     description:
       "Batsman leaves the field voluntarily without the umpire's consent but is considered out for that innings.",
   },
   {
     key: "handled_ball",
     label: "Handled Ball",
+		icon:'ball-handling.png',
     description:
       "Batsman handles the ball without the permission of the fielding side.",
   },
   {
-    key: "hit_wicket_marshalled",
-    label: "Hit Wicket-Marshalled",
-    description:
-      "Batsman hits the stumps after the ball has been declared dead but before the next delivery.",
-  },
-  {
     key: "obstructing_field",
-    label: "Obstructing Field",
+    label: "Obstruct Field",
+		icon:'obstruct.png',
     description:
       "Batsman obstructs the field without the permission of a fielder.",
   },
@@ -133,12 +129,10 @@ useEffect(() => {
   };
   return (
     <div className="flex">
-      <Modal
+      <CustomModal
         title="Wicket"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-				okButtonProps={{hidden:true}}
+				hide={handleCancel}
+				visible={isModalOpen}
 
       >
         <Button.Group className="grid grid-cols-3 gap-1">
@@ -153,17 +147,32 @@ useEffect(() => {
                     ? "block "
                     : "hidden "
                 }`}
-                title={wicket.description}
+                title={
+                  <>
+
+                    {wicket.description}
+                  </>
+                }
               >
                 <Button
                   onClick={() => handleButtonClick(wicket.key)}
                   className={`${
                     wicket.key === selectedWicketType
                       ? "bg-danger"
-                      : "primary-btn"
-                  } text-left text-white  rounded-sm`}
+                      : "bg-black rounded-md"
+                  } text-left text-white  rounded-lg`}
                 >
-                  {wicket.label}
+                  <div className=" flex flex-row justify-start gap-2">
+                    {wicket.icon && (
+                      <Image
+                        width={25}
+												preview={false}
+                        className="w-28 h-28 rounded bg-white mr-2 "
+                        src={`/wickets/${wicket.icon}`}
+                      />
+                    )}
+                    <p> {wicket.label} </p>
+                  </div>
                 </Button>
               </Tooltip>
             );
@@ -176,11 +185,11 @@ useEffect(() => {
             ""
           )}
         </div>
-      </Modal>
+      </CustomModal>
       <div className="">
         <Button
           onClick={() => showModal()}
-          className="bg-red-400 text-black w-34 h-14 p-10"
+          className="flex bg-red-700 text-white  uppercase  justify-center items-center rounded-md p-6"
         >
           Wicket
         </Button>

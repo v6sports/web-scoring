@@ -11,7 +11,7 @@ export const appealSlice = createSlice({
   name: "appealSlice",
   initialState,
   reducers: {
-    setAppealBy: (state, action: PayloadAction<number | string>) => {
+    setAppealBy: (state, action: PayloadAction<number | string | null>) => {
       return {
         ...state,
         appeal_by: action.payload,
@@ -25,19 +25,19 @@ export const appealSlice = createSlice({
         appeal_result: -1,
       };
     },
-    setAppealType: (state, action: PayloadAction<number | string>) => {
+    setAppealType: (state, action: PayloadAction<number | string  | null>) => {
       return {
         ...state,
         appeal_type: action.payload,
       };
     },
-    setAppealUmpireEnd: (state, action: PayloadAction<number | string>) => {
+    setAppealUmpireEnd: (state, action: PayloadAction<number | string  | null>) => {
       return {
         ...state,
         appeal_umpire_end: action.payload,
       };
     },
-    setAppealResult: (state, action: PayloadAction<number | string>) => {
+    setAppealResult: (state, action: PayloadAction<number | string  | null>) => {
       return {
         ...state,
         appeal_result: action.payload,
