@@ -7,9 +7,9 @@ interface IwhichTeamPlayers {
   currentInnings: Number;
 }
 
-const getPlayers = (props: IwhichTeamPlayers,teamName:any=null) => {
+const getPlayers = (props: IwhichTeamPlayers, teamName: any = null) => {
   const { key, matchData, currentInnings } = props;
-	//@ts-ignore
+  //@ts-ignore
   const currentInningsData = matchData.innings?.[currentInnings];
   const battingTeamId = currentInningsData?.team_id;
 
@@ -20,21 +20,21 @@ const getPlayers = (props: IwhichTeamPlayers,teamName:any=null) => {
 
   if (currentInnings == 1 || currentInnings == 3) {
     if (key == "batting") {
-			if(teamName)  return allPlayerListTeamA?.name
+      if (teamName) return allPlayerListTeamA?.name;
       return allPlayerListTeamA?.players;
     }
     if (key == "bowling") {
-			if(teamName)  return allPlayerListTeamB?.name
+      if (teamName) return allPlayerListTeamB?.name;
       return allPlayerListTeamB?.players;
     }
   }
   if (currentInnings == 2 || currentInnings == 4) {
     if (key == "batting") {
-			if(teamName)  return allPlayerListTeamB?.name
-		  return allPlayerListTeamB?.players;
+      if (teamName) return allPlayerListTeamB?.name;
+      return allPlayerListTeamB?.players;
     }
-    if (key ==="bowling") {
-			if(teamName)  return allPlayerListTeamA?.name
+    if (key === "bowling") {
+      if (teamName) return allPlayerListTeamA?.name;
       return allPlayerListTeamA?.players;
     }
   }
@@ -73,6 +73,8 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
     runs = 0,
     is_out,
     ball_number,
+    extras = 0,
+    extra_type,
   } = ballByBall;
 
   if (onStrikeBatsman == -1) {
@@ -87,23 +89,32 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
       nonStrikeBatsman: -1,
     };
   }
+  // Assuming proper initialization of variables before this code
   switch (true) {
-    case ballByBall.extra_type == "wide" || ballByBall.extra_type == "no-ball":
+    case extras > 0 &&
+      extras % 2 !== 0 &&
+      ball_number != 6 &&
+      (ballByBall.extra_type === "leg-bye" || ballByBall.extra_type === "bye"):
+      [onStrikeBatsman, nonStrikeBatsman] = [nonStrikeBatsman, onStrikeBatsman];
       break;
-			//@ts-ignore
+    case extras > 0 &&
+      extras % 2 != 0 &&
+      ball_number == 6 &&
+      (ballByBall.extra_type === "leg-bye" || ballByBall.extra_type === "bye"):
+      [onStrikeBatsman, nonStrikeBatsman] = [onStrikeBatsman, nonStrikeBatsman];
+      break;
     case is_out === 1 && (ball_number == 0 || ball_number == 6):
       onStrikeBatsman = nonStrikeBatsman;
       nonStrikeBatsman = -1;
       break;
-//@ts-ignore
-    case is_out === 1 && (ball_number !== 0 || ball_number != 6):
+
+    case is_out === 1 && ball_number !== 0 && ball_number !== 6:
       onStrikeBatsman = -1;
       break;
 
-    case runs % 2 != 0 && (ball_number === 0 || ball_number === 6):
-      console.log("Cheers");
+    case runs % 2 !== 0 && (ball_number === 0 || ball_number === 6):
       break;
-//@ts-ignore
+
     case runs % 2 !== 0 && is_out !== 1:
       // Switch the strike
       [onStrikeBatsman, nonStrikeBatsman] = [nonStrikeBatsman, onStrikeBatsman];
@@ -111,13 +122,15 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
 
     case ball_number === 0 ||
       ball_number === 6 ||
-			//@ts-ignore
-      (is_out === 1 && (ball_number !== 6 || ball_number !== 0)):
+      (is_out === 1 && ball_number !== 6 && ball_number !== 0):
       // Switch the strike at the end of the over or when the batsman is out on a non-zero ball number
       [onStrikeBatsman, nonStrikeBatsman] = [nonStrikeBatsman, onStrikeBatsman];
       break;
+
+    case ballByBall.extra_type === "wide" ||
+      ballByBall.extra_type === "no-ball":
+      break;
   }
-  console.log(onStrikeBatsman, "after", nonStrikeBatsman);
   return {
     onStrikeBatsman,
     nonStrikeBatsman,
