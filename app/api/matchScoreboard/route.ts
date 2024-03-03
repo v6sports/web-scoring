@@ -47,10 +47,11 @@ export async function GET(req: Request) {
 		savedData =  await fsPromises.readFile(getFileName, "utf-8");
 		// if (savedData) return NextResponse.json(JSON.parse(savedData));
 	} catch (error) {
-		console.log(error);
+
 	}
 
-	if (savedData == null) {
+	if (savedData == null || savedData?.length < 100 || savedData?.status == 0) {
+
     savedData = await fetch(
       `https://hpca.v6world.com/api/v1/fullscoreboard?match_id=${matchId}`,
       requestOptions
@@ -58,13 +59,11 @@ export async function GET(req: Request) {
       .then((response) => response.text())
       .then((result) => result)
       .catch((error) => console.log("error", error));
-
-
   }
 
 
   try {
-		console.log(folderName,"FOLDER NAME")
+
     await fsPromises.mkdir(folderName);
   } catch (error) {
     console.log("MATCH ALREADY EXISITS");
@@ -96,6 +95,7 @@ console.log('EROOR', error);
 }
 
   if (savedData) {
+		console.log("Writing File")
     fsPromises.writeFile(getFileName, savedData, "utf-8");
     fsPromises.writeFile(getUpdatedFileName, savedData, "utf-8");
     return NextResponse.json(JSON.parse(savedData));
