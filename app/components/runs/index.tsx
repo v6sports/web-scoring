@@ -365,11 +365,12 @@ const Runs = () => {
 		// const extra_count
 
 		const ballNumber = scoreBallByBallData.fullScore?.lastBallOfOver?.nextBallNumber || 1;
+		const localId = scoreBallByBallData?.fullScore?.lastBallOfOver?.localId || 0;
 		const overNumber = Math.floor(Number(scoreBallByBallData.fullScore?.totalOvers));
 		const currentTime = moment().format('hhmmss');
 		// /sendEvent?BallNo=BallNo=${match_id}_${inning_id}_${inning_number}_${over}_${over_number}_${ball_id}_${ball_number}_${extra_count}`
 		// ${matchID}_${inningId}_${inningNumber}_${dateOfMatch}_${overNumber}_${ball_id}_${ballNumber || 1 }`
-		const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}_${currentTime}_${inningNumber}_${dateOfMatch}_${overNumber}_${ball_id}_${ballNumber}_0`;
+		const recordBallUrl = `sendEvent?BallNo=BallNo=${matchID}_${dateOfMatch}_${inningNumber}_${currentTime}_${overNumber}_${ball_id}_${ballNumber}_${localId}`;
 		setSelfRecordBall(recordBallUrl);
 		message.success("Ball Recorded");
 		Axios.request({
