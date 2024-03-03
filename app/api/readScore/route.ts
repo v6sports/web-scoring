@@ -120,7 +120,7 @@ export async function POST(req: Request) {
 				validBalls += 1;
       }
 			if (over.extra_type == "bye") {
-        let extraRunsWide = extraRuns.legBye + over?.extras || 0;
+        let extraRunsWide = extraRuns.bye + over?.extras || 0;
         extraRuns["bye"] = extraRunsWide;
 				validBalls += 1;
       }
