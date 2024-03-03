@@ -2,7 +2,7 @@ import { Button } from "antd";
 import React, { useState } from "react";
 
 interface ButtonProps {
-  key?: number;
+  key?: string;
   value: string;
   label: string;
 }
@@ -28,15 +28,15 @@ const ButtonGroup: React.FC<ButtonGroupProps> = ({
       setSelectedButton(null);
       return;
     }
-    handleButtonClick(null);
+    handleButtonClick(value);
     setSelectedButton(value);
   };
-
+  const numberOfColumn = colNumber ?? 3;
   return (
     <>
       <Button.Group key={"ButtonGroup"}>
         <div className=" justify-start  gap-1 ">
-          <div className={`grid grid-cols-${colNumber} justify-start  gap-1`}>
+          <div className={`grid grid-cols-${numberOfColumn} justify-start  gap-1`}>
             {buttons.map((element) => (
               <Button
                 key={element.value}

@@ -22,7 +22,7 @@ const AppealExtras = () => {
         Appeal And Extras
       </p>
       <hr className=" w-full" />
-      <div className="flex flex-col gap-2 items-center justify-center">
+      <div className="flex flex-col gap-2 items-start justify-start">
         <Button
           className="bg-orange m-2 uppercase text-white"
           onClick={() => setShowModalForAppeal(true)}
@@ -30,9 +30,11 @@ const AppealExtras = () => {
           Appeal
         </Button>
         <ButtonGroup
-          colNumber={"4"}
-          handleButtonClick={(value: string | null) =>
+          colNumber={6}
+          handleButtonClick={(value: string | null) => {
+						//@ts-ignore
             dispacth(updateExtras({ extra_type: value }))
+					}
           }
           buttons={[
             {
