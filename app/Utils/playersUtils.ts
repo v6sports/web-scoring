@@ -103,18 +103,19 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
       (ballByBall.extra_type === "leg-bye" || ballByBall.extra_type === "bye"):
       [onStrikeBatsman, nonStrikeBatsman] = [onStrikeBatsman, nonStrikeBatsman];
       break;
-    case is_out === 1 && (ball_number == 0 || ball_number == 6):
+			//@ts-ignore
+    case is_out == 1 && (ball_number == 0 || ball_number == 6):
       onStrikeBatsman = nonStrikeBatsman;
       nonStrikeBatsman = -1;
       break;
-
-    case is_out === 1 && ball_number !== 0 && ball_number !== 6:
+//@ts-ignore
+    case is_out == 1 && ball_number !== 0 && ball_number !== 6:
       onStrikeBatsman = -1;
       break;
 
     case runs % 2 !== 0 && (ball_number === 0 || ball_number === 6):
       break;
-
+//@ts-ignore
     case runs % 2 !== 0 && is_out !== 1:
       // Switch the strike
       [onStrikeBatsman, nonStrikeBatsman] = [nonStrikeBatsman, onStrikeBatsman];
@@ -122,7 +123,8 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
 
     case ball_number === 0 ||
       ball_number === 6 ||
-      (is_out === 1 && ball_number !== 6 && ball_number !== 0):
+			//@ts-ignore
+      (is_out == 1 && ball_number !== 6 && ball_number !== 0):
       // Switch the strike at the end of the over or when the batsman is out on a non-zero ball number
       [onStrikeBatsman, nonStrikeBatsman] = [nonStrikeBatsman, onStrikeBatsman];
       break;
