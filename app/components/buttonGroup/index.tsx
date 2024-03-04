@@ -2,7 +2,7 @@ import { Button } from "antd";
 import React, { useState } from "react";
 
 interface ButtonProps {
-  key?: string;
+  key?: string | number;
   value: string;
   label: string;
 }
