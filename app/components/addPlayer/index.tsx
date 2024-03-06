@@ -1,10 +1,18 @@
 import { useState } from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, Select, message } from "antd";
+import axios from "axios";
 
 /**
  * Component for adding a player.
  */
-const AddPlayer = () => {
+
+interface BatsmanProps {
+  selector: any;
+	name?: string;
+}
+
+const AddPlayer: React.FC<BatsmanProps> = (props) => {
+  let {selector={},name='Add Player'} = props;
   const [form] = Form.useForm();
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -34,13 +42,25 @@ const AddPlayer = () => {
    * Handles form submission.
    * @param values - The form values.
    */
-  const onFinish = (values: any) => {
-    console.log("Form values:", values);
+  const onFinish = async (values: any) => {
+    console.log(selector);
+    const addPlayer = await axios.post(
+      `/api/addPlayerApi?matchId=${selector.match_id}&teamId=${selector.selectedTeamId}`,
+      values
+    ).then(res=>{
+
+			message.success('Player added successfully');
+			window.location.reload();
+		});
     // You can perform further actions with the form values here
   };
 
   return (
-    <Form form={form} className="flex flex-col justify-center items-center" onFinish={onFinish}>
+    <Form
+      form={form}
+      className="flex flex-col justify-center items-center"
+      onFinish={onFinish}
+    >
       <Form.Item
         label="Name"
         name="name"
@@ -68,7 +88,7 @@ const AddPlayer = () => {
         className="bg-black text-white rounded-lg mb-4 uppercase"
         htmlType="submit"
       >
-        Create Player
+        {name}
       </Button>
     </Form>
   );

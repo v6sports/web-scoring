@@ -19,12 +19,14 @@ import { setMatchSaveFalseStatus, setMatchSaveTrueStatus } from "@/redux/feature
 import CustomModal from "../modal";
 import AddPlayer from "../addPlayer";
 
+
 const Batsman: React.FC<any> = (props) => {
   const selector = useAppSelector((state) => state.matchSliceReducer);
 	const inningSelector = useAppSelector((state) => state.inningsTrackSlice);
 	const ballByBallResponse:any = useAppSelector((state) => state.ballByBallSlice);
 	const wicketsTracker = useAppSelector((state) => state.scoreBallByBallSlice);
 	const [addPlayer, setAddPlayer] = useState<boolean>(false);
+	const [selectedTeamId,setSelectedTeamId] = useState<number>(0);
   const [onStrikeStats, setOnStrikeStats] = useState<batsmanDetails>({
     boundariesInFour: 0,
     boundariesInSix: 0,
@@ -57,6 +59,15 @@ const Batsman: React.FC<any> = (props) => {
 					dispatch(setBattingPlayers([...battingTeam]));
 					setBattingTeamPlayer(battingTeam);
 				}
+			});
+
+			getPlayers({
+        //@ts-ignore
+        currentInnings: Number(inningNumber),
+        key: "batting",
+        matchData: selector,
+      },null,true).then((battingTeamId:any) => {
+				setSelectedTeamId(battingTeamId);
 			});
 
     }
@@ -280,10 +291,10 @@ const Batsman: React.FC<any> = (props) => {
           Change Strike
         </Button>
         <Button className="bg-green-800 text-white uppercase" onClick={()=>setAddPlayer(true)}>
-          Create Plater
+          Create Player
         </Button>
       </div>
-			{addPlayer && <CustomModal children={<AddPlayer />} hide={()=> setAddPlayer(false)} visible={addPlayer} />}
+			{addPlayer && selectedTeamId &&  <CustomModal children={<AddPlayer selector={{...inningSelector,selectedTeamId}} />} hide={()=> setAddPlayer(false)} visible={addPlayer} />}
     </div>
   );
 };

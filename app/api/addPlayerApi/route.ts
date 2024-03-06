@@ -50,7 +50,7 @@ const getPlayersByTeam = (
         teamPlayersList = matchDetails.team_a_new_det?.players;
       else if (matchDetails.team_b_new_det.team_id == teamId)
         teamPlayersList = matchDetails.team_b_new_det?.players;
-      return { players: [...existingPlayers, ...teamPlayersList] };
+      return { players: [...existingPlayers?.filter((player: any) =>  player.teamId == teamId), ...teamPlayersList] };
     } catch (error) {
       return { players: [] };
     }
@@ -108,40 +108,47 @@ export async function POST(req: Request) {
         const additionalPlayersData = fs.readFileSync(playerListPath, "utf-8");
         additionalPlayers = JSON.parse(additionalPlayersData);
       }
+	  const getCurrentTime= moment().format("YYYYMMDDHHmmss");
+	  const createdAt = moment().format("YYYY-MM-DD HH:mm:ss");
+		playerData["teamId"] = teamId;
+		playerData["player_id"] =getCurrentTime;
+		playerData["user_id"] =getCurrentTime;
+		playerData["createdAt"] = createdAt;
 
       if (matchDetails.team_a_new_det.team_id == teamId) {
         teamPlayersList = matchDetails.team_a_new_det?.players;
         let isPlayerPresent = [
           ...teamPlayersList,
-          ...additionalPlayers,
+          ...additionalPlayers?.filter((player: any) =>  player.teamId == teamId),
         ].findIndex((player: any) => {
           return (
             player.name.toLowerCase().trim() ==
             playerData.name.toLowerCase().trim()
           );
         });
-        if (isPlayerPresent > -1) {
+		if(isPlayerPresent < 0) additionalPlayers.push(playerData);
+        if (isPlayerPresent > 0) {
           return NextResponse.json({ error: "Player already exists" });
         }
-        const createdAt = moment().format("YYYY-MM-DD HH:mm:ss");
-        playerData["teamId"] = teamId;
-        playerData["createdAt"] = createdAt;
-        additionalPlayers.push(playerData);
+
+
       } else if (matchDetails.team_b_new_det.team_id == teamId) {
         teamPlayersList = matchDetails.team_b_new_det?.players;
         let isPlayerPresent = [
           ...teamPlayersList,
-          ...additionalPlayers,
+          ...additionalPlayers?.filter((player: any) =>  player.teamId == teamId)
         ].findIndex((player: any) => {
-          return (
+			return (
             player.name.toLowerCase().trim() ==
             playerData.name.toLowerCase().trim()
           );
         });
-        if (isPlayerPresent > -1) {
+		if(isPlayerPresent < 0) additionalPlayers.push(playerData);
+        if (isPlayerPresent > 0) {
           return NextResponse.json({ error: "Player already exists" });
         }
-        additionalPlayers.push(playerData);
+
+        // additionalPlayers.push(playerData);
       }
 
       // Update the match scoreboard file with the new player data

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Select } from "antd";
+import { Button, Select } from "antd";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import {
   Bowling,
@@ -22,6 +22,7 @@ import {
   setMatchSaveTrueStatus,
 } from "@/redux/features/slices/matchSaveSlice";
 import CustomModal from "../modal";
+import AddPlayer from "../addPlayer";
 
 interface Bolwer {
   onStrikebowler: playingbowlerStats;
@@ -38,7 +39,8 @@ const Bolwer = () => {
   const ballByBallResponse = useAppSelector((state) => state.ballByBallSlice);
   const inningsSlice = useAppSelector((state) => state.inningsTrackSlice);
   const [isBolwerSelected, setIsBolwerSelected] = useState(false);
-
+	const [addPlayer, setAddPlayer] = useState<boolean>(false);
+	const [selectedTeamId,setSelectedTeamId] = useState<number>(0);
   const [playerBowlerStats, setPlayerBowlerStats] = useState<any>({
     runs: 0,
     player_id: "",
@@ -77,6 +79,15 @@ const Bolwer = () => {
 					setBowlingTeamPlayer(bowlersListInReverseOrder.reverse());
 				}
 			})
+
+			getPlayers({
+        //@ts-ignore
+        currentInnings: inningNumber,
+        key: "bowling",
+        matchData: selector,
+      },null,true).then((bowlingTeamId:any) => {
+				setSelectedTeamId(bowlingTeamId);
+			});
     }
 
     // return () => setBowlingTeamPlayer([]);
@@ -248,16 +259,22 @@ const Bolwer = () => {
       <CustomModal
         visible={ballByBallResponse.on_attack == -1 ? true : false}
         hide={() => console.log("Hide")}
-				closeDisable={true}
+        closeDisable={true}
         children={
-          <div >
-            <h1 className="uppercase font-extrabold text-sm text-center">Select Bolwer</h1>
-						<hr  className="m-6"/>
-            {getPreviousBolwerName() && <div className="flex flex-row justify-center align-middle">
-              <p className="text-sm font-medium ">Previous Bolwer</p>
-              <code className="text-sm font-bold  ml-3 ">{getPreviousBolwerName() ? getPreviousBolwerName() : ""}</code>
-            </div>}
-						<hr className="mt-4 mb-4" />
+          <div>
+            <h1 className="uppercase font-extrabold text-sm text-center">
+              Select Bolwer
+            </h1>
+            <hr className="m-6" />
+            {getPreviousBolwerName() && (
+              <div className="flex flex-row justify-center align-middle">
+                <p className="text-sm font-medium ">Previous Bolwer</p>
+                <code className="text-sm font-bold  ml-3 ">
+                  {getPreviousBolwerName() ? getPreviousBolwerName() : ""}
+                </code>
+              </div>
+            )}
+            <hr className="mt-4 mb-4" />
             {bolwerDropdown()}
           </div>
         }
@@ -280,7 +297,27 @@ const Bolwer = () => {
           </Select.Option>
           <Select.Option key="far">far End</Select.Option>
         </Select>
+
+        <Button
+          onClick={() => setAddPlayer(true)}
+          className="bg-green-800 text-white uppercase"
+        >
+          Add Bowler
+        </Button>
       </div>
+      { selectedTeamId && (
+        <CustomModal
+          children={
+            <AddPlayer
+              selector={{ ...inningSelector, selectedTeamId }}
+              name={"Add Bolwer"}
+            />
+          }
+          name={"Add Bolwer"}
+          hide={() => setAddPlayer(false)}
+          visible={addPlayer}
+        />
+      )}
     </div>
   );
 };

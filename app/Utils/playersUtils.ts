@@ -8,7 +8,11 @@ interface IwhichTeamPlayers {
   currentInnings: Number;
 }
 
-const getPlayers = async (props: IwhichTeamPlayers, teamName: any = null) => {
+const getPlayers = async (
+  props: IwhichTeamPlayers,
+  teamName: any = null,
+  isTeamId: boolean = false
+) => {
   const { key, matchData, currentInnings } = props;
   //@ts-ignore
   const currentInningsData = matchData.innings?.[currentInnings];
@@ -22,30 +26,59 @@ const getPlayers = async (props: IwhichTeamPlayers, teamName: any = null) => {
   if (currentInnings == 1 || currentInnings == 3) {
     if (key == "batting") {
       if (teamName) return allPlayerListTeamA?.name;
-
-			let players:any = await axios
+      if (isTeamId) return allPlayerListTeamA?.team_id;
+      let players: any = await axios
         .get(
           `/api/addPlayerApi?matchId=${matchData.match_id}&teamId=${allPlayerListTeamA?.team_id}`
         )
         .catch((error) => {
           console.error(error);
         });
-				if(players?.data?.players.length < 1)	return allPlayerListTeamA?.players
-      return allPlayerListTeamA?.players
+      if (players?.data?.players.length < 1) return allPlayerListTeamA?.players;
+      return players?.data?.players || [];
     }
     if (key == "bowling") {
       if (teamName) return allPlayerListTeamB?.name;
-      return allPlayerListTeamB?.players;
+      if (isTeamId) return allPlayerListTeamB?.team_id;
+
+      let players: any = await axios
+        .get(
+          `/api/addPlayerApi?matchId=${matchData.match_id}&teamId=${allPlayerListTeamB?.team_id}`
+        )
+        .catch((error) => {
+          console.error(error);
+        });
+      if (players?.data?.players.length < 1) return allPlayerListTeamB?.players;
+      return players?.data?.players || [];
     }
   }
   if (currentInnings == 2 || currentInnings == 4) {
     if (key == "batting") {
       if (teamName) return allPlayerListTeamB?.name;
-      return allPlayerListTeamB?.players;
+      if (isTeamId) return allPlayerListTeamB?.team_id;
+      let players: any = await axios
+        .get(
+          `/api/addPlayerApi?matchId=${matchData.match_id}&teamId=${allPlayerListTeamB?.team_id}`
+        )
+        .catch((error) => {
+          console.error(error);
+        });
+      if (players?.data?.players.length < 1 || !players?.data?.players)
+        return allPlayerListTeamB?.players;
+      return players?.data?.players || [];
     }
     if (key === "bowling") {
       if (teamName) return allPlayerListTeamA?.name;
-      return allPlayerListTeamA?.players;
+      if (isTeamId) return allPlayerListTeamA?.team_id;
+      let players: any = await axios
+        .get(
+          `/api/addPlayerApi?matchId=${matchData.match_id}&teamId=${allPlayerListTeamA?.team_id}`
+        )
+        .catch((error) => {
+          console.error(error);
+        });
+      if (players?.data?.players.length < 1) return allPlayerListTeamA?.players;
+      return players?.data?.players || [];
     }
   }
 };
@@ -113,19 +146,19 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
       (ballByBall.extra_type === "leg-bye" || ballByBall.extra_type === "bye"):
       [onStrikeBatsman, nonStrikeBatsman] = [onStrikeBatsman, nonStrikeBatsman];
       break;
-			//@ts-ignore
+    //@ts-ignore
     case is_out == 1 && (ball_number == 0 || ball_number == 6):
       onStrikeBatsman = nonStrikeBatsman;
       nonStrikeBatsman = -1;
       break;
-//@ts-ignore
+    //@ts-ignore
     case is_out == 1 && ball_number !== 0 && ball_number !== 6:
       onStrikeBatsman = -1;
       break;
 
     case runs % 2 !== 0 && (ball_number === 0 || ball_number === 6):
       break;
-//@ts-ignore
+    //@ts-ignore
     case runs % 2 !== 0 && is_out !== 1:
       // Switch the strike
       [onStrikeBatsman, nonStrikeBatsman] = [nonStrikeBatsman, onStrikeBatsman];
@@ -133,7 +166,7 @@ export const strikeConfirm = (ballByBall: IballByBall) => {
 
     case ball_number === 0 ||
       ball_number === 6 ||
-			//@ts-ignore
+      //@ts-ignore
       (is_out == 1 && ball_number !== 6 && ball_number !== 0):
       // Switch the strike at the end of the over or when the batsman is out on a non-zero ball number
       [onStrikeBatsman, nonStrikeBatsman] = [nonStrikeBatsman, onStrikeBatsman];
