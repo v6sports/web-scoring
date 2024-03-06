@@ -30,15 +30,16 @@ const Fielders = () => {
     const inningNumber = selector?.inning_number || 0;
 
     if (inningNumber > 0) {
-      const battingTeam:any = getPlayers({
+      const battingTeam: any = getPlayers({
         //@ts-ignore
         currentInnings: Number(inningNumber),
         key: "bowling",
         matchData: selector,
+      }).then((battingTeam: any) => {
+        if (battingTeam && battingTeam?.length > 0) {
+          setBowlingTeamPlayer(battingTeam);
+        }
       });
-      if (battingTeam && battingTeam?.length > 0) {
-        setBowlingTeamPlayer(battingTeam);
-      }
     }
 
     return () => setBowlingTeamPlayer([]);

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { IballByBall } from "../interfaces/ballByBall.interface";
 import { Iscoreboard, Player } from "../interfaces/matchScoreboard.interface";
 
@@ -7,7 +8,7 @@ interface IwhichTeamPlayers {
   currentInnings: Number;
 }
 
-const getPlayers = (props: IwhichTeamPlayers, teamName: any = null) => {
+const getPlayers = async (props: IwhichTeamPlayers, teamName: any = null) => {
   const { key, matchData, currentInnings } = props;
   //@ts-ignore
   const currentInningsData = matchData.innings?.[currentInnings];
@@ -21,7 +22,16 @@ const getPlayers = (props: IwhichTeamPlayers, teamName: any = null) => {
   if (currentInnings == 1 || currentInnings == 3) {
     if (key == "batting") {
       if (teamName) return allPlayerListTeamA?.name;
-      return allPlayerListTeamA?.players;
+
+			let players:any = await axios
+        .get(
+          `/api/addPlayerApi?matchId=${matchData.match_id}&teamId=${allPlayerListTeamA?.team_id}`
+        )
+        .catch((error) => {
+          console.error(error);
+        });
+				if(players?.data?.players.length < 1)	return allPlayerListTeamA?.players
+      return allPlayerListTeamA?.players
     }
     if (key == "bowling") {
       if (teamName) return allPlayerListTeamB?.name;

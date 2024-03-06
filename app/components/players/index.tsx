@@ -22,10 +22,11 @@ const Players = () => {
         currentInnings: inningNumber,
         key: "bowling",
         matchData: selector,
-      });
-      if (bowlingTeam && bowlingTeam?.length > 0) {
-        setBowlingTeamPlayer(bowlingTeam);
-      }
+      }).then((bowlingTeam: any) => {
+				if (bowlingTeam && bowlingTeam?.length > 0) {
+					setBowlingTeamPlayer(bowlingTeam);
+				}
+			});
     }
 
     return () => setBowlingTeamPlayer([]);

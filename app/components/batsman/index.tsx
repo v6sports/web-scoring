@@ -16,12 +16,15 @@ import { calculateStrikeRate, checkNullfy } from "@/app/Utils/utils";
 import { setBatsman } from "@/redux/features/slices/inningsTrackSlice";
 import { setBattingPlayers } from "@/redux/features/slices/teams/battingTeamSlice";
 import { setMatchSaveFalseStatus, setMatchSaveTrueStatus } from "@/redux/features/slices/matchSaveSlice";
+import CustomModal from "../modal";
+import AddPlayer from "../addPlayer";
 
 const Batsman: React.FC<any> = (props) => {
   const selector = useAppSelector((state) => state.matchSliceReducer);
 	const inningSelector = useAppSelector((state) => state.inningsTrackSlice);
 	const ballByBallResponse:any = useAppSelector((state) => state.ballByBallSlice);
 	const wicketsTracker = useAppSelector((state) => state.scoreBallByBallSlice);
+	const [addPlayer, setAddPlayer] = useState<boolean>(false);
   const [onStrikeStats, setOnStrikeStats] = useState<batsmanDetails>({
     boundariesInFour: 0,
     boundariesInSix: 0,
@@ -43,17 +46,19 @@ const Batsman: React.FC<any> = (props) => {
     const inningNumber = inningSelector.inning_number || 0;
 	  if (Number(inningNumber) > 0) {
 
-      const battingTeam:any = getPlayers({
+    	 getPlayers({
         //@ts-ignore
         currentInnings: Number(inningNumber),
         key: "batting",
         matchData: selector,
-      });
-      if (battingTeam && battingTeam?.length > 0) {
+      }).then((battingTeam:any) => {
+				if (battingTeam && battingTeam?.length > 0) {
 
-				dispatch(setBattingPlayers([...battingTeam]));
-        setBattingTeamPlayer(battingTeam);
-      }
+					dispatch(setBattingPlayers([...battingTeam]));
+					setBattingTeamPlayer(battingTeam);
+				}
+			});
+
     }
 
 		if (
@@ -132,23 +137,25 @@ const Batsman: React.FC<any> = (props) => {
         id="playerOnStrike "
         className="flex-1 flex flex-row items-center  gap-4 w-full justify-center"
       >
-				{battingTeamPlayers.length > 0 && (
+        {battingTeamPlayers.length > 0 && (
           <Select
             key={parseInt(ballByBallResponse?.on_strike)}
             variant="filled"
-						// disabled={wicketsTracker.fullScore?.wickets[0]}
+            // disabled={wicketsTracker.fullScore?.wickets[0]}
             style={{ width: "150px" }}
             onSelect={strikerBatsman}
             defaultOpen={!checkNullfy(ballByBallResponse?.on_strike)}
-
             className="bg-green-300 rounded border-1 border-purple-800 w-36"
             defaultValue={ballByBallResponse?.on_strike}
           >
             {battingTeamPlayers?.flatMap((player) => {
-						let isPlayerOut = 	wicketsTracker.fullScore?.wickets?.findIndex((e=> player.player_id == e.batsman_player_id))
+              let isPlayerOut = wicketsTracker.fullScore?.wickets?.findIndex(
+                (e) => player.player_id == e.batsman_player_id
+              );
 
-							return isPlayerOut == -1 && ballByBallResponse?.non_strike != player.player_id ? (
-                <Select.Option  key={player.player_id}>
+              return isPlayerOut == -1 &&
+                ballByBallResponse?.non_strike != player.player_id ? (
+                <Select.Option key={player.player_id}>
                   {player.name}
                 </Select.Option>
               ) : (
@@ -199,7 +206,10 @@ const Batsman: React.FC<any> = (props) => {
           </Select>
         </div>
       </div>
-      <div id="playerNOnStrike " className="flex flex-row items-center  gap-4 w-full justify-center">
+      <div
+        id="playerNOnStrike "
+        className="flex flex-row items-center  gap-4 w-full justify-center"
+      >
         <Select
           style={{ width: "150px" }}
           defaultOpen={!checkNullfy(ballByBallResponse?.non_strike)}
@@ -208,9 +218,12 @@ const Batsman: React.FC<any> = (props) => {
           defaultValue={ballByBallResponse?.non_strike}
         >
           {battingTeamPlayers?.flatMap((player) => {
-						let isPlayerOut = 	wicketsTracker.fullScore?.wickets?.findIndex((e=> player.player_id == e.batsman_player_id))
+            let isPlayerOut = wicketsTracker.fullScore?.wickets?.findIndex(
+              (e) => player.player_id == e.batsman_player_id
+            );
 
-					return    isPlayerOut == -1 && ballByBallResponse?.on_strike != player.player_id ? (
+            return isPlayerOut == -1 &&
+              ballByBallResponse?.on_strike != player.player_id ? (
               <Select.Option key={player.player_id}>
                 {player.name}
               </Select.Option>
@@ -262,7 +275,15 @@ const Batsman: React.FC<any> = (props) => {
           </Select>
         </div>
       </div>
-			<Button className="bg-red-900 text-white" onClick={swapBatsman}>Change Strike</Button>
+      <div className="flex flex-row gap-2">
+        <Button className="bg-red-900 text-white" onClick={swapBatsman}>
+          Change Strike
+        </Button>
+        <Button className="bg-green-800 text-white uppercase" onClick={()=>setAddPlayer(true)}>
+          Create Plater
+        </Button>
+      </div>
+			{addPlayer && <CustomModal children={<AddPlayer />} hide={()=> setAddPlayer(false)} visible={addPlayer} />}
     </div>
   );
 };

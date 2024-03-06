@@ -70,13 +70,13 @@ const Bolwer = () => {
         currentInnings: inningNumber,
         key: "bowling",
         matchData: selector,
-      });
-      console.log(bowlingTeam, "BOWLING TEAM");
-      if (bowlingTeam && bowlingTeam?.length > 0) {
-        dispatch(setBowlingPlayers([...bowlingTeam]));
-        let bowlersListInReverseOrder = [...bowlingTeam];
-        setBowlingTeamPlayer(bowlersListInReverseOrder.reverse());
-      }
+      }).then((bowlingTeam:any) => {
+				if (bowlingTeam && bowlingTeam?.length > 0) {
+					dispatch(setBowlingPlayers([...bowlingTeam]));
+					let bowlersListInReverseOrder = [...bowlingTeam];
+					setBowlingTeamPlayer(bowlersListInReverseOrder.reverse());
+				}
+			})
     }
 
     // return () => setBowlingTeamPlayer([]);

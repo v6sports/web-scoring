@@ -28,7 +28,7 @@ const LiveScore = () => {
     const arrayForTeam = [];
     for (let i = 0; i <= maxNumberOfInning; i++) {
       if (i <= maxNumberOfInning && i > 0) {
-        let teamName = getPlayers(
+        let teamName = await getPlayers(
           {
             currentInnings: Number(inningNumber),
             key: "batting",
