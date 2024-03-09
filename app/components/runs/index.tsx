@@ -134,7 +134,8 @@ const Runs = () => {
     /**
      * Wicket will only get saved if out_method is not -1
      */
-		let whoIsOut = runTicket?.on_strike;
+
+		let whoIsOut = wicketSelecor.out_method != -1 ? runTicket?.on_strike : -1;
     if (
       runTicket.on_strike &&
       runTicket.on_attack &&
