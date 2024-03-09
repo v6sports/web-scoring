@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import matchSliceReducer from "./features/slices/matchSlice";
 
+import matchSliceReducer from "./features/slices/matchSlice";
 import ballByBallSlice from "./features/slices/ballByBallSlice";
 import { TypedUseSelectorHook, UseSelector, useSelector } from "react-redux";
 import scoreBallByBallSlice from "./features/slices/scoreBallByBallSlice";

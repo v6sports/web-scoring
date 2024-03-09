@@ -1,12 +1,15 @@
-import { Table, Tooltip } from "antd";
+import { setLoadingFalse, setLodingTrue } from "@/redux/features/slices/scoreboardProgressSlice";
+import { Button, Table, Tooltip, message } from "antd";
 import Axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 interface iProps {
 	refetchParent:()=>void,
 	matchId:string|number,
 	currentInning:string|number
 }
 const EditBalls:React.FC<iProps> = (props) => {
+	const appDispatch = useDispatch();
 	let { refetchParent,matchId,currentInning } = props;
   const [data, setData] = useState([]);
   const fetchDataFromAPI = async () => {
@@ -21,6 +24,20 @@ const EditBalls:React.FC<iProps> = (props) => {
       console.error("Error fetching data from API", error);
     }
   };
+	const syncToServer =  async () => {
+
+		appDispatch(setLodingTrue());
+		const response = await Axios.post("/api/syncApi", {
+			match_id: matchId,
+		});
+		console.log(response);
+		if(response.data.matchResponseData){
+			appDispatch(setLoadingFalse());
+			message.destroy();
+			message.success("Data Synced Successfully");
+		}
+		appDispatch(setLoadingFalse());
+	}
   useEffect(() => {
     fetchDataFromAPI();
   }, []);
@@ -74,6 +91,8 @@ const EditBalls:React.FC<iProps> = (props) => {
         bordered
         size="small"
       />
+
+			<Button className="mt-10 bg-red-600 text-white" onClick={syncToServer}>SYNC TO SERVER</Button>
     </>
   );
 };

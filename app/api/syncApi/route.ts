@@ -1,6 +1,7 @@
 import fs from "fs";
 import { NextResponse } from "next/server";
 
+const baseURL = "https://una.v6sports.com";
 export async function POST(req: Request) {
   const ballScore = await req.json();
   const matchPath = `./data/${ballScore.match_id}`;
@@ -13,7 +14,7 @@ let resultResponse:any = {
   // Read the JSON file
   try {
     const data = fs.readFileSync(`${matchPath}/matchScoreboard.json`, "utf8");
-    const postUrl = `https://una.v6sports.com/api/match/create-match`;
+    const postUrl = `${baseURL}/api/match/create-match`;
 
     const response = await fetch(postUrl, {
       method: "POST",
@@ -49,7 +50,7 @@ let resultResponse:any = {
 	const matchFolders = fs.readdirSync(matchPath);
 	for (const folder of matchFolders) {
 		if (fs.statSync(`${matchPath}/${folder}`).isDirectory()) {
-			const postUrl = `https://una.v6sports.com/api/ballByBall/create-multiple-records`;
+			const postUrl = `${baseURL}/api/ballByBall/create-multiple-records`;
 
 			const ballByBallData = fs.readFileSync(`${matchPath}/${folder}/ballByBall.json`, "utf8");
 
@@ -62,7 +63,38 @@ let resultResponse:any = {
 			});
 			if (response.ok) {
 				const result = await response.json();
+				const batterStatsUrl = [`${baseURL}/api/ballByBall/batter-stats`,`${baseURL}/api/ballByBall/bowler-stats`];
 
+				const inningNumber = folder; // Assuming the folder name represents the inning number
+				const batterStatsDataJSON = {
+					match_id: ballScore.match_id,
+					inning_number: inningNumber,
+				};
+				for (const url of batterStatsUrl) {
+          if (batterStatsDataJSON.match_id && batterStatsDataJSON.inning_number) {
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                match_id: ballScore.match_id,
+                inning_number: inningNumber,
+              }),
+            });
+            if (response.ok) {
+              const result = await response.json();
+              resultResponse.inningData.push(result);
+              resultResponse.inningStatus.push({ folder, status: "success" });
+              // Handle the response data
+              // ...
+            } else {
+              console.error("Error:", response.status);
+              // Handle the error case
+              // ...
+            }
+          }
+        }
 				resultResponse.inningData.push(result);
         		resultResponse.inningStatus.push({ folder, status: "success" });
 				// Handle the response data
@@ -73,6 +105,8 @@ let resultResponse:any = {
 				// ...
 			}
 		}
+
+
 	}
   } catch (error) {
 
