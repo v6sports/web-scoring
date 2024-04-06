@@ -290,9 +290,9 @@ const Batsman: React.FC<any> = (props) => {
         <Button className="bg-red-900 text-white" onClick={swapBatsman}>
           Change Strike
         </Button>
-        <Button className="bg-green-800 text-white uppercase" onClick={()=>setAddPlayer(true)}>
+        {/* <Button className="bg-green-800 text-white uppercase" onClick={()=>setAddPlayer(true)}>
           Create Player
-        </Button>
+        </Button> */}
       </div>
 			{addPlayer && selectedTeamId &&  <CustomModal children={<AddPlayer selector={{...inningSelector,selectedTeamId}} />} hide={()=> setAddPlayer(false)} visible={addPlayer} />}
     </div>

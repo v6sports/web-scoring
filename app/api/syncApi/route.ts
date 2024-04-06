@@ -1,7 +1,8 @@
 import fs from "fs";
 import { NextResponse } from "next/server";
 
-const baseURL = "https://una.v6sports.com";
+// const baseURL = "https://una.v6sports.com";
+const baseURL = "http://localhost:8080";
 export async function POST(req: Request) {
   const ballScore = await req.json();
   const matchPath = `./data/${ballScore.match_id}`;

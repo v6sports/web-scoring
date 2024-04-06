@@ -10,6 +10,7 @@ import battingPlayerSlice from "./features/slices/teams/battingTeamSlice";
 import bowlingPlayerSlice from "./features/slices/teams/bowlingTeamSlice";
 import matchSaveSlice from "./features/slices/matchSaveSlice";
 import appealSlice from "./features/slices/appealSlice";
+import updateEachBallSlice from "./features/slices/updateEachBallSlice";
 export const store = configureStore({
   reducer: {
     matchSliceReducer,
@@ -18,9 +19,10 @@ export const store = configureStore({
     inningsTrackSlice,
     loadingSlice,
     matchSaveSlice,
-		appealSlice,
+    appealSlice,
     battingPlayerSlice,
     bowlingPlayerSlice,
+    updateEachBallSlice,
   },
 });
 

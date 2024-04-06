@@ -15,4 +15,5 @@ export interface batsmanDetails {
   numberOfBallsPlayed: number;
   runs: number;
 	timeStamp?: string;
+	extra_type?: string;
 }

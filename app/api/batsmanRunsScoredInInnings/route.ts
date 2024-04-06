@@ -39,10 +39,13 @@ export async function POST(req: Request) {
       }
 
       // Add the values to the sums object
+			if(!item.extra_type  || item.extra_type == "no-ball") {
 				//@ts-ignore
-      playerSums[playerId].boundariesInFour += item.boundariesInFour;
+			playerSums[playerId].boundariesInFour += item.boundariesInFour;
 				//@ts-ignore
       playerSums[playerId].boundariesInSix += item.boundariesInSix;
+			}
+				//@ts-ignore
 				//@ts-ignore
       playerSums[playerId].runs += item.runs;
 				//@ts-ignore

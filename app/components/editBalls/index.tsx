@@ -92,7 +92,7 @@ const EditBalls:React.FC<iProps> = (props) => {
         size="small"
       />
 
-			<Button className="mt-10 bg-red-600 text-white" onClick={syncToServer}>SYNC TO SERVER</Button>
+			{/* <Button className="mt-10 bg-red-600 text-white" onClick={syncToServer}>SYNC TO SERVER</Button> */}
     </>
   );
 };

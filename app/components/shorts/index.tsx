@@ -2,99 +2,107 @@ import React from "react";
 
 import { Button, Form, Radio, Tabs, TabsProps } from "antd";
 import ButtonGroup from "antd/es/button/button-group";
+import { useAppSelector } from "@/redux/store";
+import { useDispatch } from "react-redux";
+import { updateBattingStyle, updateBattingType } from "@/redux/features/slices/updateEachBallSlice";
 const batterShotsArray = [
   {
     label: "Left Alone",
-    value: "Defensive",
+    value: 2,
   },
   {
     label: "Cr. Drive",
-    value: "CoverDrive",
+    value: 6,
   },
   {
     label: "ST Drive",
-    value: "STDrive",
+    value: 3,
   },
   {
     label: "Sq Drive",
-    value: "SquareDrive",
+    value: 7,
   },
   {
     label: "Sq Cut",
-    value: "Cut",
+    value: 8,
   },
   {
     label: "On Drive",
-    value: "Drive",
+    value: 4,
   },
   {
     label: "Late Cut",
-    value: "Late Shot",
+    value: 8,
   },
   {
     label: "Flick",
-    value: "Flick",
+    value: 12,
   },
   {
     label: "Glance",
-    value: "Glance",
-  },
-  {
-    label: "Push",
-    value: "Push",
-  },
-  {
-    label: "Punch",
-    value: "Punch",
+    value: 9,
   },
   {
     label: "Pull",
-    value: "Pull",
+    value: 13,
   },
   {
     label: "Sweep",
-    value: "Sweep",
+    value: 11,
   },
   {
-    label: "Paddle Sweep",
-    value: "PaddleSweep",
+    label: "Reverse Sweep",
+    value: 19,
   },
-  {
-    label: "Slog Sweep",
-    value: "SlogSweep",
-  },
+  
   {
     label: "Hook",
-    value: "Cross-Bat",
+    value: 10,
   },
   {
-    label: "Steer",
-    value: "Steer-Cross-Bat",
+    label: "Helicopter",
+    value: 16,
   },
   {
     label: "Scoop",
-    value: "Scoop-Cross-Bat",
+    value: 15,
   },
   {
-    label: "Inside Out",
-    value: "Inside-Cross-Bat",
+    label: "Step Out",
+    value:17,
+  },
+  {
+    label: "Loftead",
+    value:20,
+  },
+  {
+    label: "Others",
+    value:21,
   },
 ];
 
+// bating_type
+// batting_Style
 const options = [
-  { label: "Front Foot", value: "front" },
-  { label: "Back Foot", value: "back" },
+  { label: "Front Foot", value: 1 },
+  { label: "Back Foot", value: 2 },
 ];
 const BatterShots = () => {
 
-	const captureShotPlaced = (e:any) => {
-		console.log(e.target.value)
-		// batting_type
-	}
-	const captureShotType = (e:any) => {
-		console.log(e.target.value)
-		// batting_style
-	}
+    // const battingStyle = useAppSelector((state) => state.updateEachBallSlice.batting_Style);
+    const dispatcher = useDispatch();
+    const captureShotPlaced = (e:any) => {
+      if (typeof e.target.value == 'number') {
+        dispatcher(updateBattingType(e.target.value));
+      }
+      // batting_type
+    }
+    const captureShotType = (e:any) => {
+      if (typeof e.target.value == 'number') {
+        dispatcher(updateBattingStyle(e.target.value));
+      }
+      // batting_style
+    }
   return (
     <div className="gap-2">
       <Form  name="batsmanShot">

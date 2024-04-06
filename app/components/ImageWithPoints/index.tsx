@@ -7,9 +7,10 @@ import { Button, Image, Radio } from "antd";
 import { url } from "inspector";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import {  updateExtras } from "@/redux/features/slices/ballByBallSlice";
+import { updateExtras } from "@/redux/features/slices/ballByBallSlice";
 import CustomModal from "../modal";
 import Appeal from "../appeal";
+import { updateBowlingLength } from "@/redux/features/slices/updateEachBallSlice";
 
 interface CanvasOverlayProps {
   imageUrl: string;
@@ -36,7 +37,11 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({ imageUrl, width }) => {
 
       context.fillStyle = "red"; // Change the color if needed
       context.beginPath();
-      //   alert(`${mouseX},${mouseY}`);
+
+      let ballLength = pickBallLength(mouseX, mouseY);
+      if (ballLength) {
+        dispacth(updateBowlingLength(ballLength));
+      }
       context.arc(mouseX, mouseY, pointSize, 0, 2 * Math.PI);
       context.fill();
     }
@@ -77,7 +82,7 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({ imageUrl, width }) => {
       >
         <div className="flex flex-1 w-[20px] bg-black z-10   left-[50px] opacity-15  align-middle justify-center absolute border border-black border-1 h-[350px]"></div>
         <div className="w-full h-10 bg-[#FFF5C1] items-end flex justify-end p-2 border border-black border-b-1 border-t-0 border-r-0 border-l-0">
-          <p className="text-left text-xs font-light">Yorker (2M)</p>
+          <p className="text-left text-xs font-bold">Yorker (2M)</p>
         </div>
         <div className="w-full h-14 bg-[#9CFFF6] items-end flex justify-end p-2">
           <p className="text-right text-xs font-light">Full (4M)</p>
@@ -97,4 +102,12 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({ imageUrl, width }) => {
   );
 };
 
+
+const pickBallLength = (x: number, y: number) => {
+
+  if (x > 0 && x < 29) return 2;
+  if (x > 29 && x < 71) return 1;
+  if (x > 71 && x < 202) return 4;
+  if (x > 202) return 5;
+}
 export default CanvasOverlay;

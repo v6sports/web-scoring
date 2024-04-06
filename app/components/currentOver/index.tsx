@@ -9,11 +9,11 @@ const CurrentOver = () => {
 	const selector = useAppSelector((state) => state.matchSliceReducer);
 	const teamPlayers = useAppSelector((state) => state.battingPlayerSlice) || [];
 	// const [currentOver, setCurrentOver] = useState<bowlerDetails[]>([]);
-	useEffect(() => {
-    // This function will be called whenever scoreBallByBallData changes
-    // You can perform any update logic here
+	// useEffect(() => {
+  //   // This function will be called whenever scoreBallByBallData changes
+  //   // You can perform any update logic here
 
-  }, [scoreBallByBallData.fullScore?.currentOver,teamPlayers]);
+  // }, [scoreBallByBallData.fullScore?.currentOver,teamPlayers]);
   return (
    <div key="Current-over-div">
       <div key="Current-over-container" className="flex flex-row gap-2">
@@ -26,7 +26,7 @@ const CurrentOver = () => {
         </code>
         {scoreBallByBallData?.fullScore?.currentOver?.length > 0 &&
           scoreBallByBallData.fullScore?.currentOver?.flatMap((ball:any) => {
-						console.log(ball?.is_out,"BALLBYBALL-CURENT")
+						console.log(ball,"BALLBYBALL-CURENT")
 						let circleColor = 'bg-slate-300';
 						let circileSuffix = ''
 						let completeMessage = ''

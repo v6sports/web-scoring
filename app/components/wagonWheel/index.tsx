@@ -20,11 +20,13 @@ const WagonWheel: React.FC<WagonWheelProps> = ({ width, height }) => {
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
-
+    
     if (context && canvas) {
       // Get mouse coordinates relative to the canvas
       const mouseX = event.nativeEvent.offsetX;
       const mouseY = event.nativeEvent.offsetY;
+      console.log(mouseX, mouseY);
+      
       // get center of the div
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
@@ -38,7 +40,7 @@ const WagonWheel: React.FC<WagonWheelProps> = ({ width, height }) => {
       //   alert(`${mouseX},${mouseY}`);
       context.beginPath();
       context.moveTo(centerX, centerY);
-      context.lineTo(mouseX, mouseY); // Adjust the length as needed
+      context.lineTo(mouseX, mouseY);
       context.stroke();
 
       // Clean up
@@ -57,7 +59,7 @@ const WagonWheel: React.FC<WagonWheelProps> = ({ width, height }) => {
         width={150}
         style={{
           position: "absolute",
-          backgroundColor: "#79fb00c2",
+          backgroundColor: "#61c800c2",
           objectFit: "cover",
           left: 10,
           zIndex: 1,

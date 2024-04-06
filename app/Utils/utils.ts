@@ -51,6 +51,24 @@ const inningsRunRate = (runs: number, balls: number) => {
   let rr = (runs / balls) * 6;
   return rr ? rr.toFixed(2) : 0;
 };
+
+const wagonWheelShort = (pointX:number,pointY:number) => {
+
+  if(pointX && pointY) {
+    if(pointX > 75 && pointX <  120){
+      // Fine Leg
+      return 5;
+    }
+    if(pointX > 120 && pointX <  140){
+       // Deep Square Leg
+      return 14;
+    }
+    if(pointX > 124 && pointX <  120){
+      // "Deep Mid Wicket";
+      return 15;
+    }
+  }
+}
 export {
   showAlert,
   checkNullfy,

@@ -6,11 +6,11 @@ const PreviousOver = () => {
   const scoreBallByBallData:any = useAppSelector(
     (state) => state.scoreBallByBallSlice
   );
-  useEffect(() => {
-    // This function will be called whenever scoreBallByBallData changes
-    // You can perform any update logic here
+  // useEffect(() => {
+  //   // This function will be called whenever scoreBallByBallData changes
+  //   // You can perform any update logic here
 
-  }, [scoreBallByBallData]);
+  // }, [scoreBallByBallData]);
   return (
     <div key="previous-over-dev">
       <div key="previous-over-container" className="flex flex-row gap-2">
@@ -60,7 +60,7 @@ const PreviousOver = () => {
                 className={`rounded-sm ${circleColor} w-7 h-7 text-center items-center justify-center flex text-xs font-mono`}
               >
               <Tooltip title={completeMessage || `${ball.run || '0'} run scored`}>
-                {ball.run || '0'}{circileSuffix}
+							{(ball.run || ball?.extras || 0) < 0 ? 0 : (ball.run || ball?.extras || 0) }{circileSuffix}
 								</Tooltip>
               </code>
             );

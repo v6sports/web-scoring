@@ -298,26 +298,14 @@ const Bolwer = () => {
           <Select.Option key="far">far End</Select.Option>
         </Select>
 
-        <Button
+        {/* <Button
           onClick={() => setAddPlayer(true)}
           className="bg-green-800 text-white uppercase"
         >
           Add Bowler
-        </Button>
+        </Button> */}
       </div>
-      { selectedTeamId && (
-        <CustomModal
-          children={
-            <AddPlayer
-              selector={{ ...inningSelector, selectedTeamId }}
-              name={"Add Bolwer"}
-            />
-          }
-          name={"Add Bolwer"}
-          hide={() => setAddPlayer(false)}
-          visible={addPlayer}
-        />
-      )}
+    
     </div>
   );
 };

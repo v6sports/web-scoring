@@ -28,6 +28,7 @@ import {
 } from "@/redux/features/slices/scoreboardProgressSlice";
 import { resetAppeal } from "@/redux/features/slices/appealSlice";
 import AppealExtras from "../appealExtras";
+import { resetEachBall } from "@/redux/features/slices/updateEachBallSlice";
 
 const Runs = () => {
   const [selectedButton, setSelectedButton] = useState<string | number | null>(
@@ -82,11 +83,12 @@ const Runs = () => {
     isSaveEnabled();
   }, [JSON.stringify(runTicket)]);
   const submitBallByBall = async (e: any) => {
+    const ballBattingAndBowlingStats = store.getState().updateEachBallSlice;
     e.preventDefault();
     e.stopPropagation();
     try {
       //@ts-ignore
-      let previiousBall =scoreBallByBallData.fullScore?.currentOver[scoreBallByBallData.fullScore?.currentOver?.length - 1] || -1;
+      let previiousBall = scoreBallByBallData.fullScore?.currentOver[scoreBallByBallData.fullScore?.currentOver?.length - 1] || -1;
       const currentTime = moment();
       //@ts-ignore
       const providedTime = moment(previiousBall?.currentTimeStamp, "HH:mm:ss");
@@ -135,7 +137,7 @@ const Runs = () => {
      * Wicket will only get saved if out_method is not -1
      */
 
-		let whoIsOut = wicketSelecor.out_method != -1 ? runTicket?.on_strike : -1;
+    let whoIsOut = wicketSelecor.out_method != -1 ? runTicket?.on_strike : -1;
     if (
       runTicket.on_strike &&
       runTicket.on_attack &&
@@ -154,6 +156,7 @@ const Runs = () => {
 
     /** LOGIC FOR WICKET WRITING HERE ONLY FOR NOW END */
     let runsClicked: any = 0;
+
     let isBoundry = 0;
     if (selectedButton == "44") {
       runsClicked = 4;
@@ -211,7 +214,7 @@ const Runs = () => {
       out_by: 0,
       user_id: "123",
       who_out: whoIsOut,
-      boundary: isBoundry,
+      boundary: (!runTicket?.extra_type || runTicket?.extra_type == 'no-ball') ? isBoundry : 0,
       match_id: match_id.toString(),
       assist_by: fielder_player_id.toString(),
       on_attack: runTicket?.on_attack,
@@ -224,6 +227,7 @@ const Runs = () => {
       wicket_type: out_method.toString(),
       next_batsman: 0,
       scoring_area: 0,
+      ...ballBattingAndBowlingStats,
       inning_number: inning_number,
       bowling_length: 0,
       non_striker_out: 0,
@@ -250,7 +254,7 @@ const Runs = () => {
       })
         .then(() => {
           extraByeorLegBye = 0;
-					whoIsOut=0;
+          whoIsOut = 0;
           // dispacth(resetBatsman());
           // dispacth(resetBowler());
           // dispacth(resetOutMethod());
@@ -288,6 +292,7 @@ const Runs = () => {
           console.log(e);
         });
       }
+      dispacth(resetEachBall());
 
       let bolwerJson: bowler = {
         matchId: match_id,
@@ -374,7 +379,8 @@ const Runs = () => {
     const localId =
       scoreBallByBallData?.fullScore?.lastBallOfOver?.localId || 0;
     const overNumber =
-      Math.floor(Number(scoreBallByBallData.fullScore?.totalOvers)) + 1;
+      Math.floor(Number(scoreBallByBallData.fullScore?.totalOvers))
+
     const currentTime = moment().format("hhmmss");
     // /sendEvent?BallNo=BallNo=${match_id}_${inning_id}_${inning_number}_${over}_${over_number}_${ball_id}_${ball_number}_${extra_count}`
     // ${matchID}_${inningId}_${inningNumber}_${dateOfMatch}_${overNumber}_${ball_id}_${ballNumber || 1 }`
@@ -396,7 +402,7 @@ const Runs = () => {
 
   return (
     isSaveButtonEnabled && <div>
-			<div className="flex flex-row gap-4 mt-4 justify-center">
+      <div className="flex flex-row gap-4 mt-4 justify-center">
         <Button
           onClick={recordBall}
           disabled={disableSelfRecord}
@@ -410,124 +416,116 @@ const Runs = () => {
               className="w-28 h-28 rounded  "
               src={`/rec-button.png`}
             />
-						<p className="ml-2 uppercase">Record Ball</p>
+            <p className="ml-2 uppercase">Record Ball</p>
           </div>
         </Button>
       </div>
-			<AppealExtras />
-			<div className="flex flex-col m-2 w-[340px] border rounded justify-center items-center pb-1">
-			<p className="text-red-600 uppercase text-sm font-bold text-center">
-        Runs Scored
-      </p>
-			<hr className=" w-full mb-2" />
-				<Button.Group key={"ButtonGroup"}>
-					<div className=" justify-start  gap-1 border border-1">
-						<div className="grid grid-cols-6 justify-start  gap-1 ">
-							<Button
-								key={"Value-1"}
-								className={`flex ${
-									selectedButton === 1 ? "bg-danger" : " primary-btn"
-								} text-white  text-center items-center p-4 text-lg font-extrabold`}
-								onClick={() => handleButtonClick("1")}
-							>
-								1
-							</Button>
-							<Button
-								key={"Value-2"}
-								className={`flex ${
-									selectedButton === 2 ? "bg-danger" : " primary-btn"
-								} text-white  text-center items-center p-4 text-lg font-extrabold`}
-								onClick={() => handleButtonClick("2")}
-							>
-								2
-							</Button>
-							<Button
-								key={"Value-3"}
-								className={`flex ${
-									selectedButton === 3 ? "bg-danger" : " primary-btn"
-								} text-white  text-center items-center p-4 text-lg font-extrabold`}
-								onClick={() => handleButtonClick("3")}
-							>
-								3
-							</Button>
+      <AppealExtras />
+      <div className="flex flex-col m-2 w-[340px] border rounded justify-center items-center pb-1">
+        <p className="text-red-600 uppercase text-sm font-bold text-center">
+          Runs Scored
+        </p>
+        <hr className=" w-full mb-2" />
+        <Button.Group key={"ButtonGroup"}>
+          <div className=" justify-start  gap-1 border border-1">
+            <div className="grid grid-cols-6 justify-start  gap-1 ">
+              <Button
+                key={"Value-1"}
+                className={`flex ${selectedButton === 1 ? "bg-danger" : " primary-btn"
+                  } text-white  text-center items-center p-4 text-lg font-extrabold`}
+                onClick={() => handleButtonClick("1")}
+              >
+                1
+              </Button>
+              <Button
+                key={"Value-2"}
+                className={`flex ${selectedButton === 2 ? "bg-danger" : " primary-btn"
+                  } text-white  text-center items-center p-4 text-lg font-extrabold`}
+                onClick={() => handleButtonClick("2")}
+              >
+                2
+              </Button>
+              <Button
+                key={"Value-3"}
+                className={`flex ${selectedButton === 3 ? "bg-danger" : " primary-btn"
+                  } text-white  text-center items-center p-4 text-lg font-extrabold`}
+                onClick={() => handleButtonClick("3")}
+              >
+                3
+              </Button>
 
-							<Button
-								key={"Value-4"}
-								className={`flex ${
-									selectedButton === 4 ? "bg-danger" : " primary-btn"
-								} text-white  text-center items-center p-4 text-lg font-extrabold`}
-								onClick={() => handleButtonClick("4")}
-							>
-								4
-							</Button>
-							<Button
-								key={"Value-5"}
-								className={`flex ${
-									selectedButton === 5 ? "bg-danger" : " primary-btn"
-								} text-white  text-center items-center p-4 text-lg font-extrabold`}
-								onClick={() => handleButtonClick("5")}
-							>
-								5
-							</Button>
-							<Button
-								key={"Value-6"}
-								className={`flex ${
-									selectedButton === 6 ? "bg-danger" : " primary-btn"
-								} text-white  text-center items-center p-4 text-lg font-extrabold`}
-								onClick={() => handleButtonClick("6")}
-							>
-								6
-							</Button>
-						</div>
-					</div>
-				</Button.Group>
-				<Button.Group key="save&wicket">
-					<div className="flex flex-row mt-2 gap-2">
-						<Button
-							key={"Value-44"}
-							className={`flex ${
-								selectedButton == 44 ? "bg-danger" : " bg-yellow-200 text-black"
-							}   text-center items-center p-6 text-lg font-extrabold`}
-							onClick={() => handleButtonClick("44")}
-						>
-							4B
-						</Button>
-						<Button
-							key={"Value-66"}
-							className={`flex ${
-								selectedButton == 66 ? "bg-danger" : " bg-yellow-500"
-							} text-black  text-center items-center p-6 text-lg font-extrabold`}
-							onClick={() => handleButtonClick("66")}
-						>
-							6B
-						</Button>
-						{selectedButton === null ? (
-						<Input
-							className=" w-10 h-12  font-extrabold text-center justify-center items-center"
-							minLength={0}
-							onWheel={handleWheel}
-							maxLength={1}
-							inputMode="numeric"
-							placeholder="#"
-						/>
-					) : (
-						""
-					)}
+              <Button
+                key={"Value-4"}
+                className={`flex ${selectedButton === 4 ? "bg-danger" : " primary-btn"
+                  } text-white  text-center items-center p-4 text-lg font-extrabold`}
+                onClick={() => handleButtonClick("4")}
+              >
+                4
+              </Button>
+              <Button
+                key={"Value-5"}
+                className={`flex ${selectedButton === 5 ? "bg-danger" : " primary-btn"
+                  } text-white  text-center items-center p-4 text-lg font-extrabold`}
+                onClick={() => handleButtonClick("5")}
+              >
+                5
+              </Button>
+              <Button
+                key={"Value-6"}
+                className={`flex ${selectedButton === 6 ? "bg-danger" : " primary-btn"
+                  } text-white  text-center items-center p-4 text-lg font-extrabold`}
+                onClick={() => handleButtonClick("6")}
+              >
+                6
+              </Button>
+            </div>
+          </div>
+        </Button.Group>
+        <Button.Group key="save&wicket">
+          <div className="flex flex-row mt-2 gap-2">
+            <Button
+              key={"Value-44"}
+              className={`flex ${selectedButton == 44 ? "bg-danger" : " bg-yellow-200 text-black"
+                }   text-center items-center p-6 text-lg font-extrabold`}
+              onClick={() => handleButtonClick("44")}
+            >
+              4B
+            </Button>
+            <Button
+              key={"Value-66"}
+              className={`flex ${selectedButton == 66 ? "bg-danger" : " bg-yellow-500"
+                } text-black  text-center items-center p-6 text-lg font-extrabold`}
+              onClick={() => handleButtonClick("66")}
+            >
+              6B
+            </Button>
+            {selectedButton === null ? (
+              <Input
+                className=" w-10 h-12  font-extrabold text-center justify-center items-center"
+                minLength={0}
+                onWheel={handleWheel}
+                maxLength={1}
+                inputMode="numeric"
+                placeholder="#"
+              />
+            ) : (
+              ""
+            )}
 
-					</div>
-				</Button.Group>
-				<div className="flex flex-row gap-4 mt-4">
-					{isSaveButtonEnabled && (
-						<Button
-							onClick={(e) => submitBallByBall(e)}
-							className={`flex ${"bg-green-600"} text-white  text-center items-center p-6 text-xl font-extrabold uppercase`}
-						>
-							Save
-						</Button>
-					)}
-					<Wicket />
-				</div>
-			</div>
+          </div>
+        </Button.Group>
+        <div className="flex flex-row gap-4 mt-4">
+          {isSaveButtonEnabled && (
+            <Button
+              onClick={(e) => submitBallByBall(e)}
+              className={`flex ${"bg-green-600"} text-white  text-center items-center p-6 text-xl font-extrabold uppercase`}
+            >
+              Save
+            </Button>
+          )}
+          <Wicket />
+        </div>
+      </div>
 
     </div>
   );
